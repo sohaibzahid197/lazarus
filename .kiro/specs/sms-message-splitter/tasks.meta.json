@@ -1,0 +1,29 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Create monorepo workspace root and the `packages/brain` package": [
+      {
+        "executionId": "dd4eb7df-1523-4599-b1e4-4dc04bea0a68",
+        "chatSessionId": "sess_a5946f2e-f40a-473a-ba4b-98acf28c0498",
+        "timestamp": 1794216680850
+      },
+      {
+        "executionId": "f9cc772f-08a2-4dc5-864a-821e11c1bbd9",
+        "chatSessionId": "sess_928e2b31-4b88-4ed3-aced-af37a484c6ac",
+        "timestamp": 1794219340439
+      },
+      {
+        "executionId": "f9cc772f-08a2-4dc5-864a-821e11c1bbd9",
+        "chatSessionId": "sess_928e2b31-4b88-4ed3-aced-af37a484c6ac",
+        "timestamp": 1794219622579
+      }
+    ],
+    "1. Set up package scaffolding and tooling": [
+      {
+        "executionId": "f9cc772f-08a2-4dc5-864a-821e11c1bbd9",
+        "chatSessionId": "sess_928e2b31-4b88-4ed3-aced-af37a484c6ac",
+        "timestamp": 1794219622608
+      }
+    ]
+  }
+}

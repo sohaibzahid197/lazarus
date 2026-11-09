@@ -1,0 +1,1 @@
+{"name": "lazarus", "version": "0.0.1", "private": true, "workspaces": ["packages/*"], "engines": {"node": ">= 22.11.0"}, "scripts": {"test": "npm run test --workspace @lazarus/brain", "typecheck": "npm run typecheck --workspace @lazarus/brain", "lint": "npm run lint --workspace @lazarus/brain"}}

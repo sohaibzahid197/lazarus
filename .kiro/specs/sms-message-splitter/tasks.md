@@ -8,9 +8,9 @@ Each module exports its internals so unit and property tests can target them dir
 
 ## Tasks
 
-- [ ] 1. Set up package scaffolding and tooling
-  - [ ] 1.1 Create monorepo workspace root and the `packages/brain` package
-    - Create root `package.json` with npm workspaces pointing at `packages/*` and `apps/*`
+- [x] 1. Set up package scaffolding and tooling
+  - [x] 1.1 Create monorepo workspace root and the `packages/brain` package
+    - Create root `package.json` with npm workspaces pointing at `packages/*` only (React Native app in `apps/necromancer` keeps its own install and links `@lazarus/brain` later)
     - Create `packages/brain/package.json` (name `@lazarus/brain`) with `vitest`, `fast-check`, `typescript`, and `@typescript-eslint` as dev dependencies
     - Create `packages/brain/tsconfig.json` with `strict: true` and `noImplicitAny: true`
     - Create `packages/brain/vitest.config.ts` configured for non-watch single runs
