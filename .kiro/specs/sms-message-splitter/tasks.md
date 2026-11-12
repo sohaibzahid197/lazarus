@@ -18,18 +18,18 @@ Each module exports its internals so unit and property tests can target them dir
     - Run install and confirm `tsc --noEmit` and `vitest --run` execute without error on an empty suite
     - _Requirements: 1.1, 1.2, 1.3, 1.4_
 
-- [ ] 2. Implement encoding detection
-  - [ ] 2.1 Implement `encoding.ts`
+- [x] 2. Implement encoding detection
+  - [x] 2.1 Implement `encoding.ts`
     - Define `SmsEncoding = 'GSM-7' | 'UCS-2'` type
     - Build `GSM_7_BASIC` `Set<string>` from the 3GPP TS 23.038 default alphabet (printable chars, space, LF, CR), excluding the backtick/grave accent
     - Build `GSM_7_EXTENSION` `Set<string>` = `^ { } \ [ ~ ] | €`
     - Implement `isGsm7Basic`, `isGsm7Extension`, `isGsm7`, and `detectEncoding` (returns `'UCS-2'` iff any character is non-GSM-7)
     - _Requirements: 4.1_
-  - [ ] 2.2 Write property test for encoding detection
+  - [x] 2.2 Write property test for encoding detection
     - **Property 5: Encoding detection is whole-message**
     - For `anyTextArb`, assert `detectEncoding(t) === 'UCS-2'` iff some character is non-GSM-7
     - **Validates: Requirements 4.1**
-  - [ ] 2.3 Write unit tests for encoding detection
+  - [x] 2.3 Write unit tests for encoding detection
     - Test pure GSM-7 basic text → `'GSM-7'`; GSM-7 extension-only text → `'GSM-7'`; Urdu characters, emoji (surrogate pair), and the backtick `` ` `` → `'UCS-2'`
     - _Requirements: 4.1_
 

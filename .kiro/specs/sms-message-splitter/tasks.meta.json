@@ -1,5 +1,10 @@
 {
-  "pbtResults": {},
+  "pbtResults": {
+    "2.2 Write property test for encoding detection": {
+      "status": "passed",
+      "lastRunTimestamp": 1794220695571
+    }
+  },
   "executionHistory": {
     "1.1 Create monorepo workspace root and the `packages/brain` package": [
       {
@@ -23,6 +28,59 @@
         "executionId": "f9cc772f-08a2-4dc5-864a-821e11c1bbd9",
         "chatSessionId": "sess_928e2b31-4b88-4ed3-aced-af37a484c6ac",
         "timestamp": 1794219622608
+      }
+    ],
+    "2.1 Implement `encoding.ts`": [
+      {
+        "executionId": "6d2b9e7f-b75f-40b3-8cac-e40cfdd16c99",
+        "chatSessionId": "sess_928e2b31-4b88-4ed3-aced-af37a484c6ac",
+        "timestamp": 1794219726157
+      },
+      {
+        "executionId": "6d2b9e7f-b75f-40b3-8cac-e40cfdd16c99",
+        "chatSessionId": "sess_928e2b31-4b88-4ed3-aced-af37a484c6ac",
+        "timestamp": 1794220199092
+      }
+    ],
+    "2.2 Write property test for encoding detection": [
+      {
+        "executionId": "6d2b9e7f-b75f-40b3-8cac-e40cfdd16c99",
+        "chatSessionId": "sess_928e2b31-4b88-4ed3-aced-af37a484c6ac",
+        "timestamp": 1794220238798
+      },
+      {
+        "executionId": "6d2b9e7f-b75f-40b3-8cac-e40cfdd16c99",
+        "chatSessionId": "sess_928e2b31-4b88-4ed3-aced-af37a484c6ac",
+        "timestamp": 1794220256641
+      },
+      {
+        "executionId": "6d2b9e7f-b75f-40b3-8cac-e40cfdd16c99",
+        "chatSessionId": "sess_928e2b31-4b88-4ed3-aced-af37a484c6ac",
+        "timestamp": 1794220721414
+      }
+    ],
+    "2.3 Write unit tests for encoding detection": [
+      {
+        "executionId": "6d2b9e7f-b75f-40b3-8cac-e40cfdd16c99",
+        "chatSessionId": "sess_928e2b31-4b88-4ed3-aced-af37a484c6ac",
+        "timestamp": 1794220727446
+      },
+      {
+        "executionId": "6d2b9e7f-b75f-40b3-8cac-e40cfdd16c99",
+        "chatSessionId": "sess_928e2b31-4b88-4ed3-aced-af37a484c6ac",
+        "timestamp": 1794220732338
+      },
+      {
+        "executionId": "6d2b9e7f-b75f-40b3-8cac-e40cfdd16c99",
+        "chatSessionId": "sess_928e2b31-4b88-4ed3-aced-af37a484c6ac",
+        "timestamp": 1794220901933
+      }
+    ],
+    "2. Implement encoding detection": [
+      {
+        "executionId": "6d2b9e7f-b75f-40b3-8cac-e40cfdd16c99",
+        "chatSessionId": "sess_928e2b31-4b88-4ed3-aced-af37a484c6ac",
+        "timestamp": 1794220901990
       }
     ]
   }
