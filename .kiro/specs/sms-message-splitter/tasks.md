@@ -33,97 +33,97 @@ Each module exports its internals so unit and property tests can target them dir
     - Test pure GSM-7 basic text → `'GSM-7'`; GSM-7 extension-only text → `'GSM-7'`; Urdu characters, emoji (surrogate pair), and the backtick `` ` `` → `'UCS-2'`
     - _Requirements: 4.1_
 
-- [ ] 3. Implement code unit counting
-  - [ ] 3.1 Implement `units.ts`
+- [x] 3. Implement code unit counting
+  - [x] 3.1 Implement `units.ts`
     - Implement `gsm7CharWeight(ch)` returning `1` for basic and `2` for extension characters
     - Implement `countCodeUnits(text, encoding)`: weighted sum over code points for GSM-7, `text.length` for UCS-2
     - Implement `isHighSurrogate(cu)` (`0xD800–0xDBFF`) and `isLowSurrogate(cu)` (`0xDC00–0xDFFF`)
     - _Requirements: 5.1_
-  - [ ] 3.2 Write property test for extension character counting
+  - [x] 3.2 Write property test for extension character counting
     - **Property 7: Extension characters count as two code units**
     - For `gsm7TextArb`, assert `countCodeUnits(text, 'GSM-7')` equals `(#basic)*1 + (#extension)*2`
     - **Validates: Requirements 5.1**
-  - [ ] 3.3 Write unit tests for code unit counting
+  - [x] 3.3 Write unit tests for code unit counting
     - Test basic chars count 1, extension chars (`^`, `€`) count 2, a supplementary emoji counts as 2 in UCS-2 (`text.length`)
     - _Requirements: 5.1_
 
-- [ ] 4. Implement limits and prefixes
-  - [ ] 4.1 Implement `limits.ts`
+- [x] 4. Implement limits and prefixes
+  - [x] 4.1 Implement `limits.ts`
     - Define constants `GSM_7_SINGLE_LIMIT=160`, `GSM_7_MULTI_LIMIT=153`, `UCS2_SINGLE_LIMIT=70`, `UCS2_MULTI_LIMIT=67`, `WORD_BOUNDARY_WINDOW=15`, `MAX_PARTS=4`, `TRUNCATION_INDICATOR='...'`
     - Implement `getPartLimits(encoding)` returning `{ single, multi }` for the encoding
     - _Requirements: 3.1, 3.2, 4.2, 4.3_
-  - [ ] 4.2 Implement `prefix.ts`
+  - [x] 4.2 Implement `prefix.ts`
     - Define `PART_PREFIX_PATTERN = /^\(\d+\/\d+\) /`
     - Implement `formatPartPrefix(n, total)` returning `(n/total) ` and `stripPartPrefix(part)` removing one leading prefix if present
     - _Requirements: 7.1, 7.3_
-  - [ ] 4.3 Write unit tests for the prefix module
+  - [x] 4.3 Write unit tests for the prefix module
     - Test `formatPartPrefix(1, 2)` → `(1/2) `, `stripPartPrefix('(1/2) hi')` → `hi`, and no-op when no prefix matches
     - _Requirements: 7.1, 7.3_
 
-- [ ] 5. Checkpoint - Ensure all tests pass
+- [x] 5. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 6. Implement core splitting logic
-  - [ ] 6.1 Implement `split.ts`
+- [x] 6. Implement core splitting logic
+  - [x] 6.1 Implement `split.ts`
     - Implement `findCutByBudget(text, budget, encoding)`: largest code-unit prefix fitting `budget`, decrementing `cut` by 1 if it would split a surrogate pair (UCS-2); guard `hardCut >= 1`
     - Implement `applyWordBoundary(text, hardCut)`: latest space in the last `WORD_BOUNDARY_WINDOW` code units, returning `spaceIndex + 1` (space stays in current part), or `hardCut`
     - Implement `splitContent(text, encoding)`: return `[text]` if within single limit, else greedily fill parts at `contentBudget = multiLimit - prefixUnits`
     - Implement `applyPrefixes(parts)`: no prefix when one part, else `(n/total) ` per part
     - _Requirements: 2.1, 2.2, 2.3, 6.1, 6.2, 6.3, 7.1, 7.3_
-  - [ ] 6.2 Write property test for surrogate pair integrity
+  - [x] 6.2 Write property test for surrogate pair integrity
     - **Property 3: Surrogate pairs never split across parts**
     - For `ucs2TextArb` containing emoji, assert no adjacent parts separate a high surrogate from its low surrogate
     - **Validates: Requirements 6.1**
-  - [ ] 6.3 Write property test for word-boundary split preference
+  - [x] 6.3 Write property test for word-boundary split preference
     - **Property 8: Word-boundary split preference**
     - For multi-part `anyTextArb`, recompute the expected cut per part and assert it matches the actual content length (hard cut, or after the latest space within the window)
     - **Validates: Requirements 6.2, 6.3**
-  - [ ] 6.4 Write unit tests for splitting
+  - [x] 6.4 Write unit tests for splitting
     - Test GSM-7 text of exactly 160 units → 1 part; 161 units → 2 parts each `<= 153`; a single very long word (no spaces) longer than the budget splits at the hard limit with no character loss; an emoji placed near a split boundary is never split
     - _Requirements: 2.2, 2.3, 3.1, 3.2, 6.1, 6.2, 6.3_
 
-- [ ] 7. Implement truncation and hard cap
-  - [ ] 7.1 Implement `truncation.ts`
+- [x] 7. Implement truncation and hard cap
+  - [x] 7.1 Implement `truncation.ts`
     - Implement `applyHardCap(parts, contentBudget, encoding)`: if `parts.length <= 4` return unchanged; else keep first 3, rejoin the rest, cut at `contentBudget - 3` with `applyWordBoundary`, and append `'...'` to the 4th part
     - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5_
-  - [ ] 7.2 Write property test for truncation behavior
+  - [x] 7.2 Write property test for truncation behavior
     - **Property 10: Truncation behavior for over-cap replies**
     - For `overCapacityTextArb`, assert exactly 4 parts, the last part ends with `...`, and the pre-indicator content ends at a word boundary when a space is near the truncation point
     - **Validates: Requirements 9.2, 9.3, 9.5**
-  - [ ] 7.3 Write unit tests for truncation
+  - [x] 7.3 Write unit tests for truncation
     - Test content split exceeding 4 parts produces exactly 4 parts; last part ends with `...`; the `...` (3 code units) counts toward the last part's limit
     - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5_
 
-- [ ] 8. Implement public API and integration
-  - [ ] 8.1 Implement `index.ts`
+- [x] 8. Implement public API and integration
+  - [x] 8.1 Implement `index.ts`
     - Implement `splitSms(replyText)`: `detectEncoding` → `splitContent` → `applyHardCap` → `applyPrefixes`
     - Implement `joinSms(parts)`: when `parts.length > 1` strip one prefix per part then concatenate; when a single part, return it unchanged (no stripping even if it begins with a prefix-shaped token)
     - _Requirements: 2.1, 7.1, 7.3, 8.1, 8.2_
-  - [ ] 8.2 Write property test for round-trip reconstruction
+  - [x] 8.2 Write property test for round-trip reconstruction
     - **Property 1: Round-trip reconstruction**
     - For `anyTextArb` and `prefixShapedSingleArb` constrained to `<= 4` parts, assert `joinSms(splitSms(t)) === t`; the `prefixShapedSingleArb` case guards that a single-part message beginning with a token like `(1/2) ` round-trips unchanged
     - **Validates: Requirements 8.2**
-  - [ ] 8.3 Write property test for no part exceeding its encoding limit
+  - [x] 8.3 Write property test for no part exceeding its encoding limit
     - **Property 2: No part exceeds its encoding limit**
     - For `anyTextArb`, assert every part is within the single or multi limit depending on part count (covers prefix and `...` budget consumption)
     - **Validates: Requirements 3.1, 3.2, 4.2, 4.3, 7.2, 9.4**
-  - [ ] 8.4 Write property test for maximum 4 parts
+  - [x] 8.4 Write property test for maximum 4 parts
     - **Property 4: Maximum 4 parts produced**
     - For `anyTextArb` including very long inputs, assert `splitSms(t).length <= 4`
     - **Validates: Requirements 9.1**
-  - [ ] 8.5 Write property test for single-part iff within single limit
+  - [x] 8.5 Write property test for single-part iff within single limit
     - **Property 6: Single-part iff within single limit**
     - For `anyTextArb`, assert part count is 1 iff total code units `<= singleLimit`
     - **Validates: Requirements 2.2, 2.3**
-  - [ ] 8.6 Write property test for part prefixing
+  - [x] 8.6 Write property test for part prefixing
     - **Property 9: Part prefixing**
     - For `anyTextArb`, assert no prefix on a single part (and `joinSms` returns it unchanged), and `(n/total)` sequential numbering with consistent totals on multi-part output; `joinSms` strips exactly one prefix per part
     - **Validates: Requirements 7.1, 7.3**
-  - [ ] 8.7 Write unit tests for the public API
+  - [x] 8.7 Write unit tests for the public API
     - Test empty string → `[""]` and `joinSms([""]) === ""`; `joinSms` strips `(1/2) ` and `(2/2) ` and concatenates for a 2-part GSM-7 reply and a 2-part UCS-2 reply; a 1-part reply has no prefix; `splitSms("(1/2) Hello")` returns `["(1/2) Hello"]` and round-trips unchanged; `splitSms` output passed straight to `joinSms` round-trips for inputs up to 4 parts
     - _Requirements: 2.1, 7.1, 7.3, 8.1, 8.2_
 
-- [ ] 9. Final checkpoint - Ensure all tests pass
+- [x] 9. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

@@ -3,6 +3,42 @@
     "2.2 Write property test for encoding detection": {
       "status": "passed",
       "lastRunTimestamp": 1794220695571
+    },
+    "3.2 Write property test for extension character counting": {
+      "status": "passed",
+      "lastRunTimestamp": 1794464784001
+    },
+    "6.2 Write property test for surrogate pair integrity": {
+      "status": "passed",
+      "lastRunTimestamp": 1794464856036
+    },
+    "6.3 Write property test for word-boundary split preference": {
+      "status": "passed",
+      "lastRunTimestamp": 1794464932391
+    },
+    "8.2 Write property test for round-trip reconstruction": {
+      "status": "passed",
+      "lastRunTimestamp": 1794465024325
+    },
+    "8.3 Write property test for no part exceeding its encoding limit": {
+      "status": "passed",
+      "lastRunTimestamp": 1794465092316
+    },
+    "7.2 Write property test for truncation behavior": {
+      "status": "passed",
+      "lastRunTimestamp": 1794465105284
+    },
+    "8.4 Write property test for maximum 4 parts": {
+      "status": "passed",
+      "lastRunTimestamp": 1794465165085
+    },
+    "8.5 Write property test for single-part iff within single limit": {
+      "status": "passed",
+      "lastRunTimestamp": 1794465220228
+    },
+    "8.6 Write property test for part prefixing": {
+      "status": "passed",
+      "lastRunTimestamp": 1794465680975
     }
   },
   "executionHistory": {
@@ -81,6 +117,415 @@
         "executionId": "6d2b9e7f-b75f-40b3-8cac-e40cfdd16c99",
         "chatSessionId": "sess_928e2b31-4b88-4ed3-aced-af37a484c6ac",
         "timestamp": 1794220901990
+      }
+    ],
+    "3.1 Implement `units.ts`": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463915685
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464010174
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464173623
+      }
+    ],
+    "3.2 Write property test for extension character counting": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463915725
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464188809
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464799319
+      }
+    ],
+    "3.3 Write unit tests for code unit counting": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463915760
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464810544
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464871768
+      }
+    ],
+    "4.1 Implement `limits.ts`": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463915792
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464010209
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464173671
+      }
+    ],
+    "4.2 Implement `prefix.ts`": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463915824
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463932009
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464002322
+      }
+    ],
+    "4.3 Write unit tests for the prefix module": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463915865
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464010241
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464173699
+      }
+    ],
+    "5. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463915908
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465753907
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794467311038
+      }
+    ],
+    "6.1 Implement `split.ts`": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463915941
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464188861
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464799354
+      }
+    ],
+    "6.2 Write property test for surrogate pair integrity": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463915969
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464811468
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464873600
+      }
+    ],
+    "6.3 Write property test for word-boundary split preference": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463916001
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464889954
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464959573
+      }
+    ],
+    "6.4 Write unit tests for splitting": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463916024
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464972993
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465044117
+      }
+    ],
+    "7.1 Implement `truncation.ts`": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463916051
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464812029
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464873643
+      }
+    ],
+    "7.2 Write property test for truncation behavior": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463916073
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465058018
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465120457
+      }
+    ],
+    "7.3 Write unit tests for truncation": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463916097
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465126868
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465177652
+      }
+    ],
+    "8.1 Implement `index.ts`": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463916122
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464889985
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464959537
+      }
+    ],
+    "8.2 Write property test for round-trip reconstruction": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463916145
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464973579
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465044063
+      }
+    ],
+    "8.3 Write property test for no part exceeding its encoding limit": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463916167
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465058435
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465120940
+      }
+    ],
+    "8.4 Write property test for maximum 4 parts": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463916190
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465127371
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465178314
+      }
+    ],
+    "8.5 Write property test for single-part iff within single limit": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463916216
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465184007
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465233077
+      }
+    ],
+    "8.6 Write property test for part prefixing": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463916240
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465240138
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465695715
+      }
+    ],
+    "8.7 Write unit tests for the public API": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463916279
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465701447
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465748180
+      }
+    ],
+    "9. Final checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794463916308
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794467324501
+      },
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794467372464
+      }
+    ],
+    "4. Implement limits and prefixes": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464173733
+      }
+    ],
+    "3. Implement code unit counting": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794464871798
+      }
+    ],
+    "6. Implement core splitting logic": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465044150
+      }
+    ],
+    "7. Implement truncation and hard cap": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465177740
+      }
+    ],
+    "8. Implement public API and integration": [
+      {
+        "executionId": "faf66dae-3642-4664-b35f-ce3d2f45657c",
+        "chatSessionId": "sess_3600ef6c-1d58-42c2-8917-6b88900f8774",
+        "timestamp": 1794465748245
       }
     ]
   }
