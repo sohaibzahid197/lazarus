@@ -17,3 +17,7 @@ Short notes on how Kiro was used. This becomes the Kiro write-up and blog.
 - Design phase: Kiro web-searched GSM 03.38 and cited sources; 10 correctness properties for fast-check.
 - Review fix: joinSms strips part prefixes only for multi-part messages, so a single reply starting with "(1/2) " round-trips unchanged.
 - All test tasks made required (Kiro had marked them optional).
+
+## Spec 2: brain-command-router
+- Kiro built the pure router (types, normalizer, 18-alias table, language detector, printer) from 15 correctness properties; 172 tests pass, including fast-check property tests at 100+ runs and a STOP-always-wins property.
+- ESLint now bans `any` and restricts Date, console, fetch and Math.random in the router modules, so purity is enforced at lint time.

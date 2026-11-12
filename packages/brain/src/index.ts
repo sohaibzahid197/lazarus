@@ -27,6 +27,13 @@ export {
 } from './split.js';
 export { applyHardCap } from './truncation.js';
 
+// Command_Router public API.
+export * from './router.types.js';
+export { routeCommand } from './router.js';
+export { detectLanguage } from './language.js';
+export { printCommand } from './printer.js';
+export { normalizeMessage } from './normalize.js';
+
 /**
  * Splits a reply into SMS parts.
  *
