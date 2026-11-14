@@ -7,14 +7,12 @@
 // TypeScript consumed by both apps.
 //
 // The helper modules' public symbols are re-exported so consumers can
-// import everything from `@lazarus/brain`.
-import { detectEncoding } from './encoding.js';
-import { getPartLimits } from './limits.js';
-import { applyPrefixes, splitContent } from './split.js';
-import { applyHardCap } from './truncation.js';
-import { stripPartPrefix } from './prefix.js';
-import { countCodeUnits } from './units.js';
-
+// import everything from `@lazarus/brain`. Internal modules must import
+// from the defining module, never from this entry point, to avoid cycles.
+//
+// The Gemini client (`gemini.entry.ts`) is deliberately NOT exported here;
+// it is available only through the `@lazarus/brain/gemini` subpath so the
+// core entry stays free of env reads and the `@google/genai` dependency.
 export * from './encoding.js';
 export * from './limits.js';
 export * from './prefix.js';
@@ -26,50 +24,67 @@ export {
   splitContent,
 } from './split.js';
 export { applyHardCap } from './truncation.js';
-
+export { joinSms, splitSms } from './sms.js';
 // Command_Router public API.
 export * from './router.types.js';
 export { routeCommand } from './router.js';
 export { detectLanguage } from './language.js';
 export { printCommand } from './printer.js';
 export { normalizeMessage } from './normalize.js';
-
-/**
- * Splits a reply into SMS parts.
- *
- * Detects the encoding, greedily splits the text (word-boundary preferring,
- * surrogate-safe), enforces the 4-part hard cap with a `...` truncation
- * indicator, and prefixes each part with `(n/total) ` only when there is
- * more than one part. Empty input yields `['']`.
- *
- * @param replyText - The full reply text.
- * @returns The SMS parts, ready to send in order.
- */
-export function splitSms(replyText: string): string[] {
-  const encoding = detectEncoding(replyText);
-  const content = splitContent(replyText, encoding);
-  const prefixUnits = countCodeUnits('(1/4) ', encoding);
-  const contentBudget = getPartLimits(encoding).multi - prefixUnits;
-  const capped = applyHardCap(content, contentBudget, encoding);
-  return applyPrefixes(capped);
-}
-
-/**
- * Reassembles SMS parts into the original text.
- *
- * With more than one part, each part's `(n/total) ` prefix is stripped and
- * the contents are concatenated. A single part is returned unchanged, even
- * if it begins with a prefix-shaped token. An empty array yields `''`.
- *
- * @param parts - The parts produced by `splitSms`.
- * @returns The joined text.
- */
-export function joinSms(parts: string[]): string {
-  if (parts.length === 0) {
-    return '';
-  }
-  if (parts.length === 1) {
-    return parts[0] as string;
-  }
-  return parts.map(stripPartPrefix).join('');
-}
+// AI client contract and mock (_Requirements: 1.5_).
+export type { AiClient, AiErrorKind, Prompt } from './ai.types.js';
+export { AI_ERROR_KINDS, AiError, isAiError, toAiError } from './ai.types.js';
+export type { MockClient, MockStep } from './ai.mock.js';
+export { createMockClient } from './ai.mock.js';
+// Answer_Service public API (_Requirements: 12.5_).
+export type {
+  AnswerCache,
+  AnswerDeps,
+  RequestKind,
+  ScamResult,
+  ScamVerdict,
+  Topic,
+} from './answer.types.js';
+export { answerQuestion, checkScam, resolveLanguage } from './answer.service.js';
+export { createMemoryCache } from './answer.cache.js';
+// Model configuration (_Requirements: 15.1_).
+export { DEFAULT_GEMINI_MODEL, resolveModel } from './models.js';
+// Pure helpers used by tests.
+export type { PromptOptions } from './answer.prompt.js';
+export { buildPrompt, promptCharLimit, sanitizeUserText } from './answer.prompt.js';
+export type { TopicResult } from './answer.topic.js';
+export {
+  asksForLiveFacts,
+  asksForPriceOrRate,
+  classifyTopic,
+  containsUnsupportedAmount,
+} from './answer.topic.js';
+export {
+  fitsSms,
+  hasPromptLeak,
+  joinReply,
+  removeAll,
+  shortenToFit,
+  smartCut,
+  stripMarkdown,
+} from './answer.text.js';
+export { parseScam, printScam } from './answer.scam.js';
+export { maskPhoneNumbers, redactSecrets } from './answer.redact.js';
+export { buildCacheKey } from './answer.key.js';
+export type { FixedTexts } from './answer.texts.js';
+export {
+  CACHE_MAX_ENTRIES,
+  CACHE_TTL_MS,
+  CALL_TIMEOUT_MS,
+  CLOSE_DELIMITER,
+  FIXED_TEXTS,
+  LEAK_RUN_LENGTH,
+  LIVE_FACT_KEYWORDS,
+  MAX_QUESTION_CODE_POINTS,
+  MAX_REASON_CODE_POINTS,
+  OPEN_DELIMITER,
+  PRICE_KEYWORDS,
+  REDACTED,
+  TARGET_PARTS,
+  TOPIC_KEYWORDS,
+} from './answer.texts.js';

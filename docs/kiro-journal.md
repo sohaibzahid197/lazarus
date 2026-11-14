@@ -21,3 +21,6 @@ Short notes on how Kiro was used. This becomes the Kiro write-up and blog.
 ## Spec 2: brain-command-router
 - Kiro built the pure router (types, normalizer, 18-alias table, language detector, printer) from 15 correctness properties; 172 tests pass, including fast-check property tests at 100+ runs and a STOP-always-wins property.
 - ESLint now bans `any` and restricts Date, console, fetch and Math.random in the router modules, so purity is enforced at lint time.
+## Spec 3: ai-answer-service
+- Kiro built the Answer_Service (answerQuestion, checkScam) with an injectable AI client, 24 h LRU cache, quota cache re-check, redaction and a Gemini free-tier adapter isolated in `gemini.entry.ts`; 691 tests pass across 30 correctness properties.
+- Property tests caught two real bugs: a nested referral re-forming after whitespace collapse (fixed by looping removal) and `stripMarkdown` leaving a lone list marker.
