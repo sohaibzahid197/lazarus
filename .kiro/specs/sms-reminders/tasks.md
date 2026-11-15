@@ -475,7 +475,7 @@ Optional marking: test sub-tasks marked `*` may be skipped for a faster MVP. Tes
     - `apps/necromancer/src` contains no `subah`, `shaam`, `raat`, `am`/`pm` regexes and no `% 12` hour math, and imports reminder logic from `@lazarus/brain`
     - _Requirements: 11.12_
 
-- [-] 19. Final checkpoint - Ensure all tests pass
+- [x] 19. Final checkpoint - Ensure all tests pass
   - Run `npx vitest --run` in `packages/brain`, `npx jest` in `apps/necromancer`, `npx tsc --noEmit` in both, `./gradlew testDebugUnitTest` and `./gradlew assembleDebug`. Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
