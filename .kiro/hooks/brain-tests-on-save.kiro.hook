@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Brain tests on save",
+  "description": "When a file in packages/brain/src is saved, run the brain tests and fix any failures.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["packages/brain/src/**/*.ts"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A file in packages/brain/src was just saved. Run `npm test` in packages/brain (single run, never watch mode). If every test passes, reply in one line with the file and test counts and stop. If a test fails, find the cause and fix the source code with the smallest change that matches the spec in .kiro/specs and the steering rules. Do not weaken, skip or delete tests, and do not lower fast-check run counts. If the test itself looks wrong, explain why and ask before changing it. After a fix, run `npm test`, `npm run typecheck` and `npm run lint` in packages/brain again and report what you changed."
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Journal entry when a spec is complete",
+  "description": "When a spec's tasks.md has every task checked, append a dated entry to docs/kiro-journal.md.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [".kiro/specs/*/tasks.md"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A spec's tasks.md was just saved. Read it. If any task checkbox is not checked ('- [ ]', '- [~]' or '- [-]'), reply 'not complete yet' and stop. If every task is checked ('- [x]'), find the spec name from its folder (.kiro/specs/<name>/). Then open docs/kiro-journal.md. If it already has a section for this spec, reply 'already in the journal' and stop. Otherwise get today's date with `date +%Y-%m-%d` and append at the end a section titled '## <date>: Spec <n>, <name>', where <n> is the next spec number after the last one in the journal. Write 3 to 6 short plain bullets in the same style as the existing entries: what was built, any bugs or spec changes found (from requirements.md, design.md and the task notes), and the final test counts if they are known. Don't invent numbers; leave a count out if you can't find it. Change nothing else in the file."
+  }
+}

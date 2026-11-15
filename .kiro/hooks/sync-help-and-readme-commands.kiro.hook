@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "Sync HELP texts and README commands",
+  "description": "When the brain's command definitions change, update the HELP texts and the README commands table.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "packages/brain/src/commands.ts",
+      "packages/brain/src/router.types.ts",
+      "packages/brain/src/aliases.ts"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "The brain's command definitions just changed (COMMANDS in packages/brain/src/router.types.ts, the aliases in packages/brain/src/aliases.ts, or packages/brain/src/commands.ts if it exists). Compare the current commands and their syntax with (1) the HELP texts in packages/brain/src/gateway.texts.ts for English, Urdu script and Roman Urdu, and (2) the Commands table in the root README.md. If the README has no Commands section, add one after the intro with a table of Command, Syntax and What it does. Update only what is out of date. Follow the product steering: short, kind, plain words, and each HELP text must fit in 1 to 3 SMS parts (check with the brain's splitter, GSM-7 vs UCS-2). Keep the three languages saying the same thing. If nothing is out of date, say so in one line and change nothing. After editing, run `npm test` in packages/brain and fix any test that pins the old HELP text only if the new text is intended."
+  }
+}
