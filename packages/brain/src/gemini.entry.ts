@@ -1,53 +1,23 @@
 /**
- * Gemini adapter: the production AiClient.
+ * Gemini adapter for Node: the production AiClient.
  *
- * This is the only file that imports `@google/genai` and the only file that
- * reads `GEMINI_API_KEY` and `GEMINI_MODEL`. It is a separate entry point
- * (`@lazarus/brain/gemini`) and is not exported from `index.ts`.
- *
- * Free tier only: one `models.generateContent` call per attempt, with no
- * tools, grounding, cached content, batch jobs or other billing-only features.
+ * This is the only file that imports `@google/genai` and, with
+ * `gemini.native.ts`, the only file that reads `GEMINI_API_KEY` and
+ * `GEMINI_MODEL`. It is a separate entry point (`@lazarus/brain/gemini`) and
+ * is not exported from `index.ts`. The shared logic lives in `gemini.core.ts`.
  */
 import { GoogleGenAI } from '@google/genai';
-import { AiError, isAiError, type AiClient, type Prompt } from './ai.types.js';
+import type { AiClient } from './ai.types.js';
 import { resolveModel } from './models.js';
-import { maskPhoneNumbers, redactSecrets } from './answer.redact.js';
+import { createGeminiCore, type EnvConfig, type GenaiLike, type GeminiOptions } from './gemini.core.js';
 
-const MAX_OUTPUT_TOKENS = 300;
-const TEMPERATURE = 0.3;
-const MISSING_KEY_MESSAGE = 'GEMINI_API_KEY is not configured';
-const REQUEST_FAILED_MESSAGE = 'Gemini request failed';
-
-/** The used part of the SDK: only models.generateContent. */
-export interface GenaiLike {
-  readonly models: {
-    generateContent(params: {
-      model: string;
-      contents: string;
-      config: {
-        systemInstruction: string;
-        maxOutputTokens: number;
-        temperature: number;
-      };
-    }): Promise<{ readonly text?: string }>;
-  };
-}
-
-export interface EnvConfig {
-  readonly GEMINI_API_KEY?: string;
-  readonly GEMINI_MODEL?: string;
-}
-
-export interface GeminiOptions {
-  /** Default: the two variables read from `process.env`. */
-  readonly env?: EnvConfig;
-  /** Factory option wins over `GEMINI_MODEL`. */
-  readonly model?: string;
-  /** Injectable SDK factory. Default: `key => new GoogleGenAI({ apiKey: key })`. */
-  readonly genai?: (apiKey: string) => GenaiLike;
-  /** Default: no-op. Every line is redacted and phone-masked first. */
-  readonly log?: (line: string) => void;
-}
+export {
+  mapSdkError,
+  createGeminiCore,
+  type EnvConfig,
+  type GenaiLike,
+  type GeminiOptions,
+} from './gemini.core.js';
 
 /** The only place the SDK constructor is written. */
 function defaultGenai(apiKey: string): GenaiLike {
@@ -63,164 +33,8 @@ function readEnv(env: EnvConfig | undefined): EnvConfig {
   };
 }
 
-function trimmedKey(value: string | undefined): string {
-  return typeof value === 'string' ? value.trim() : '';
-}
-
-const TIMEOUT_STATUSES: ReadonlySet<number> = new Set([408, 504]);
-const TIMEOUT_NAMES: ReadonlySet<string> = new Set(['AbortError', 'TimeoutError']);
-const TIMEOUT_CODES: ReadonlySet<string> = new Set(['timeout', 'ETIMEDOUT']);
-const NETWORK_CODES: ReadonlySet<string> = new Set([
-  'ECONNRESET',
-  'ECONNREFUSED',
-  'ENOTFOUND',
-  'EAI_AGAIN',
-]);
-
-/** The fields of an SDK error that the mapping looks at. */
-interface ErrorFacts {
-  readonly status: number | undefined;
-  readonly name: string | undefined;
-  readonly code: string | undefined;
-  /** Detection only: never copied into an AiError message or log. */
-  readonly text: string;
-}
-
-/** Reads one property; any throwing getter or proxy trap gives `undefined`. */
-function readField(error: unknown, field: string): unknown {
-  if ((typeof error !== 'object' && typeof error !== 'function') || error === null) {
-    return undefined;
-  }
-  try {
-    return (error as Record<string, unknown>)[field];
-  } catch {
-    return undefined;
-  }
-}
-
-function asString(value: unknown): string | undefined {
-  return typeof value === 'string' ? value : undefined;
-}
-
-function asStatus(value: unknown): number | undefined {
-  return typeof value === 'number' && Number.isInteger(value) && value >= 100 && value <= 599
-    ? value
-    : undefined;
-}
-
-function readFacts(error: unknown): ErrorFacts {
-  const rawStatus = readField(error, 'status');
-  const textParts = [
-    asString(error),
-    asString(rawStatus),
-    asString(readField(error, 'statusText')),
-    asString(readField(error, 'message')),
-  ];
-  return {
-    status: asStatus(rawStatus),
-    name: asString(readField(error, 'name')),
-    code: asString(readField(error, 'code')),
-    text: textParts.filter((part): part is string => part !== undefined).join(' '),
-  };
-}
-
-function isQuota(facts: ErrorFacts): boolean {
-  return facts.status === 429 || facts.text.includes('RESOURCE_EXHAUSTED');
-}
-
-function isTimeout(facts: ErrorFacts): boolean {
-  return (
-    (facts.status !== undefined && TIMEOUT_STATUSES.has(facts.status)) ||
-    (facts.name !== undefined && TIMEOUT_NAMES.has(facts.name)) ||
-    (facts.code !== undefined && TIMEOUT_CODES.has(facts.code))
-  );
-}
-
-function isNetwork(facts: ErrorFacts): boolean {
-  return (
-    (facts.status !== undefined && facts.status >= 500) ||
-    facts.name === 'TypeError' ||
-    (facts.code !== undefined && NETWORK_CODES.has(facts.code))
-  );
-}
-
-/** Fixed description plus the numeric status; never the SDK text or the key. */
-function failureMessage(status: number | undefined): string {
-  return status === undefined ? REQUEST_FAILED_MESSAGE : `${REQUEST_FAILED_MESSAGE} (status ${status})`;
-}
-
-function safeIsAiError(error: unknown): error is AiError {
-  try {
-    return isAiError(error);
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Maps an SDK error to an AiError. Pure and never throws.
- *
- * Order: existing AiError unchanged; 429 or `RESOURCE_EXHAUSTED` is `quota`;
- * 408/504, `AbortError`/`TimeoutError` or `timeout`/`ETIMEDOUT` is `timeout`;
- * other 5xx, `TypeError` or a connection code is `network`; everything else,
- * including 400/401/403/404, billing and permission errors, is `unknown`.
- * The caller does not retry on another model or feature.
- */
-export function mapSdkError(error: unknown): AiError {
-  if (safeIsAiError(error)) return error;
-  const facts = readFacts(error);
-  const message = failureMessage(facts.status);
-  if (isQuota(facts)) return new AiError('quota', message);
-  if (isTimeout(facts)) return new AiError('timeout', message);
-  if (isNetwork(facts)) return new AiError('network', message);
-  return new AiError('unknown', message);
-}
-
-function unconfiguredClient(log: (line: string) => void): AiClient {
-  return {
-    complete(): Promise<string> {
-      log(`gemini: ${MISSING_KEY_MESSAGE}`);
-      return Promise.reject(new AiError('unknown', MISSING_KEY_MESSAGE));
-    },
-  };
-}
-
-function textOf(response: { readonly text?: unknown }): string {
-  return typeof response.text === 'string' ? response.text : '';
-}
-
 export function createGeminiClient(options: GeminiOptions = {}): AiClient {
   const env = readEnv(options.env);
-  const key = trimmedKey(env.GEMINI_API_KEY);
-  const rawLog = options.log ?? ((): void => undefined);
-  const log = (line: string): void => rawLog(maskPhoneNumbers(redactSecrets(line, [key])));
-
-  if (key === '') return unconfiguredClient(log);
-
   const model = resolveModel(options.model, env.GEMINI_MODEL);
-  const makeGenai = options.genai ?? defaultGenai;
-  let ai: GenaiLike | undefined;
-
-  return {
-    async complete(prompt: Prompt): Promise<string> {
-      try {
-        ai ??= makeGenai(key);
-        log(`gemini: request model=${model}`);
-        const response = await ai.models.generateContent({
-          model,
-          contents: prompt.user,
-          config: {
-            systemInstruction: prompt.system,
-            maxOutputTokens: MAX_OUTPUT_TOKENS,
-            temperature: TEMPERATURE,
-          },
-        });
-        return textOf(response);
-      } catch (error: unknown) {
-        const mapped = mapSdkError(error);
-        log(`gemini: error kind=${mapped.kind} ${mapped.message}`);
-        throw mapped;
-      }
-    },
-  };
+  return createGeminiCore(env.GEMINI_API_KEY, model, options.genai ?? defaultGenai, options.log);
 }

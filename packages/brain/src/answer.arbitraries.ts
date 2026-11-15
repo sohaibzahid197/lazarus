@@ -160,13 +160,18 @@ const fillerWordArb: fc.Arbitrary<string> = fc.oneof(
   fc.string({ unit: fc.constantFrom(...DIGITS), minLength: 1, maxLength: 3 }),
 );
 
-/** Filler text with no keyword of any topic or live-fact list inside it. */
+/**
+ * Filler text with no keyword of any topic or live-fact list inside it, before or
+ * after normalization. The check on `normalizeMessage(text)` matters: Arabic
+ * presentation forms (e.g. U+FC20 U+FC0B) expand under NFKC into ordinary letters
+ * that can spell a keyword such as صحت, which would change the question's topic.
+ */
 const fillerArb: fc.Arbitrary<string> = fc
   .array(fillerWordArb, { maxLength: 6 })
   .map((words) => words.join(' '))
   .filter((text) => {
-    const lower = text.toLowerCase();
-    return ALL_KEYWORDS.every((k) => !lower.includes(k));
+    const forms = [text.toLowerCase(), normalizeMessage(text).toLowerCase()];
+    return ALL_KEYWORDS.every((k) => forms.every((f) => !f.includes(k)));
   });
 
 const boundaryArb: fc.Arbitrary<string> = fc.constantFrom(' ', '  ', '\n', ', ', '? ', '. ');

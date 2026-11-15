@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@lazarus/brain": "file:../../packages/brain",
     "react": "19.3.0",
     "react-native": "0.88.1",
     "@react-native/new-app-screen": "0.88.1",
@@ -38,5 +39,13 @@
   },
   "engines": {
     "node": ">= 22.11.0"
+  },
+  "codegenConfig": {
+    "name": "NecromancerSpec",
+    "type": "modules",
+    "jsSrcsDir": "src/native/specs",
+    "android": {
+      "javaPackageName": "dev.lazarus.necromancer.specs"
+    }
   }
 }

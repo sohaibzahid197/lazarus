@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Requirement 16.22: keep the Api_Key_Store (EncryptedSharedPreferences) and all
+  other app data out of cloud backup and device-to-device transfer (Android 12+).
+  A restored encrypted file cannot be decrypted without the original Keystore key.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="database" path="." />
+        <exclude domain="file" path="." />
+        <exclude domain="root" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="database" path="." />
+        <exclude domain="file" path="." />
+        <exclude domain="root" path="." />
+    </device-transfer>
+</data-extraction-rules>

@@ -88,3 +88,97 @@ export {
   TARGET_PARTS,
   TOPIC_KEYWORDS,
 } from './answer.texts.js';
+// Gateway_Module public API (_Requirements: 17.7, 17.10_).
+// `gateway.arbitraries.ts` is test-only and deliberately not exported.
+export type {
+  ActivityEntry,
+  CanonicalNumber,
+  DayCounters,
+  DeviceStatus,
+  FinalOutcome,
+  GatewayDecision,
+  GatewaySettings,
+  GatewayState,
+  Heartbeat,
+  InboundMessage,
+  Outcome,
+  PartResult,
+  PipelineContext,
+  SendReport,
+  SenderIdentity,
+  ServiceStatus,
+  SleepReason,
+  StateChange,
+} from './gateway.types.js';
+export { OUTCOMES, SLEEP_REASONS } from './gateway.types.js';
+export {
+  FALLBACK_COUNTRY_CODE,
+  isCanonicalNumber,
+  isValidCountryCode,
+  maskNumber,
+  maskSender,
+  normalizeSender,
+  printNumber,
+} from './gateway.number.js';
+export type { RateCheck } from './gateway.rate.js';
+export {
+  checkRate,
+  countInWindow,
+  pruneRate,
+  RATE_RETENTION_MS,
+  slowDownDue,
+} from './gateway.rate.js';
+export {
+  countersFor,
+  localDayKey,
+  recordFinal,
+  releaseParts,
+  reserveParts,
+  zeroCounters,
+} from './gateway.counters.js';
+export type { GatewayTexts } from './gateway.texts.js';
+export { GATEWAY_TEXTS } from './gateway.texts.js';
+export type { AnswerRequest, EvalStep, PendingReply, PipelineDeps } from './gateway.pipeline.js';
+export {
+  applyChanges,
+  completeReply,
+  evaluateInbound,
+  finalizeSend,
+  orderInbound,
+  runGatewayPipeline,
+} from './gateway.pipeline.js';
+export { deriveHeartbeat } from './gateway.heartbeat.js';
+export { ACTIVITY_LOG_MAX, buildActivityEntry, trimActivityLog } from './gateway.activity.js';
+export type {
+  AllowlistAdd,
+  FieldResult,
+  ParsedSettings,
+  SettingsField,
+} from './gateway.settings.js';
+export {
+  addToAllowlist,
+  ALLOWLIST_MAX,
+  DEFAULT_SETTINGS,
+  parseSettings,
+  serializeSettings,
+  validateSettingsField,
+} from './gateway.settings.js';
+export type { KeyCheck } from './gateway.key.js';
+export { API_KEY_INVALID_MESSAGE, maskApiKey, validateApiKey } from './gateway.key.js';
+export type { DecodedState } from './gateway.state.js';
+export { decodeStoredState, serializeChanges } from './gateway.state.js';
+export type { PendingStopRecord } from './gateway.pending.js';
+export {
+  applyPendingStop,
+  decodePendingStopRecord,
+  orderPendingStops,
+} from './gateway.pending.js';
+export type { StopAliasAsset } from './stopAliases.js';
+export {
+  KEYWORD_TRAILING_PUNCTUATION,
+  STOP_ALIAS_LIST,
+  STOP_MARKER,
+  stopAliasAsset,
+  stopKeywordCheck,
+  trailingPunctuationRegex,
+} from './stopAliases.js';

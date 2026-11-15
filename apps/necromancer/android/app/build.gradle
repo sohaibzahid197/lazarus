@@ -22,6 +22,9 @@ react {
     //   skip the bundling of the JS bundle and the assets. Default is "debug", "debugOptimized".
     //   If you add flavors like lite, prod, etc. you'll have to list your debuggableVariants.
     // debuggableVariants = ["liteDebug", "liteDebugOptimized", "prodDebug", "prodDebugOptimized"]
+    //   Lazarus: bundle JS and Hermes bytecode into every variant, so a sideloaded
+    //   debug APK runs without Metro.
+    debuggableVariants = []
 
     /* Bundling */
     //   A list containing the node command and its flags. Default is just 'node'.
@@ -72,6 +75,41 @@ def enableProguardInReleaseBuilds = false
  */
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
+/**
+ * Lazarus: generate the Stop_Alias_List asset (stop_aliases.json) from @lazarus/brain
+ * so the Kotlin StopKeywordCheck never keeps its own keyword list (Req 9.13, 17.7).
+ * The file lives only under build/ and is never committed.
+ * Node is resolved from the `nodeExecutable` Gradle property, else `node` on PATH.
+ */
+def brainDir = rootProject.file("../../../packages/brain")
+def generatedAssetsDir = layout.buildDirectory.dir("generated/lazarus/assets")
+def stopAliasesFile = layout.buildDirectory.file("generated/lazarus/assets/stop_aliases.json")
+def nodeBin = (findProperty("nodeExecutable") ?: "node").toString()
+
+def generateStopAliases = tasks.register("generateStopAliases", Exec) {
+    group = "lazarus"
+    description = "Writes stop_aliases.json from @lazarus/brain into the generated assets dir."
+    inputs.file(new File(brainDir, "src/aliases.ts"))
+    inputs.file(new File(brainDir, "src/stopAliases.ts"))
+    inputs.file(new File(brainDir, "scripts/export-stop-aliases.ts"))
+    inputs.file(new File(brainDir, "scripts/ts-resolve.mjs"))
+    outputs.file(stopAliasesFile)
+    workingDir brainDir
+    commandLine nodeBin, "--import", "./scripts/ts-resolve.mjs",
+            "./scripts/export-stop-aliases.ts",
+            "--out", stopAliasesFile.get().asFile.absolutePath
+}
+
+tasks.matching { it.name ==~ /merge.*Assets/ }.configureEach {
+    dependsOn generateStopAliases
+}
+// JVM tests read the real generated asset (StopKeywordCheckTest, Req 9.13, 17.7).
+tasks.matching { it.name ==~ /test.*UnitTest/ }.configureEach {
+    dependsOn generateStopAliases
+    inputs.file(stopAliasesFile)
+    systemProperty "lazarus.stopAliasesPath", stopAliasesFile.get().asFile.absolutePath
+}
+
 android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -84,6 +122,11 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+    }
+    sourceSets {
+        main {
+            assets.srcDirs += generatedAssetsDir.get().asFile
+        }
     }
     signingConfigs {
         debug {
@@ -116,4 +159,8 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+    // EncryptedSharedPreferences for ApiKeyStore (deprecated in 1.1.0 but still works).
+    implementation("androidx.security:security-crypto:1.1.0")
+    // JVM unit tests for the pure Kotlin helpers.
+    testImplementation("junit:junit:4.13.2")
 }

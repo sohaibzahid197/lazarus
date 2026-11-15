@@ -2,8 +2,9 @@ import { ALIAS_TABLE } from './aliases.js';
 import { detectLanguage } from './language.js';
 import { normalizeMessage } from './normalize.js';
 import type { Command, RoutedCommand } from './router.types.js';
+import { trailingPunctuationRegex } from './stopAliases.js';
 
-const TRAILING_PUNCT = /[.,!?:;]+$/;
+const TRAILING_PUNCT = trailingPunctuationRegex();
 const ARG_REQUIRED: ReadonlySet<Command> = new Set<Command>(['SCAM', 'REMIND', 'TRANSLATE']);
 
 /** Classify an SMS body into one command. Total, pure, decides on the first token only. */

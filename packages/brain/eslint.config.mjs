@@ -11,6 +11,12 @@ export default tseslint.config(
   {
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
+      // A leading underscore marks a deliberately unused binding (stub
+      // parameters in fakes, omitted fields in rest destructuring).
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true },
+      ],
     },
   },
   // Purity for the command router modules only (Requirements 8.1, 8.4).

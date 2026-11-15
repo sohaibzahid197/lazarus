@@ -1,13 +1,61 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Requirement 17.4: the only dangerous/normal permissions the gateway needs. -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Requirement 17.5: never declared, even if a library manifest asks for them. -->
+    <uses-permission android:name="android.permission.READ_SMS" tools:node="remove" />
+    <uses-permission android:name="android.permission.WRITE_SMS" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" tools:node="remove" />
+
+    <!-- Package visibility (Android 11+) so SettingsIntents can resolveActivity before
+         opening the HyperOS Autostart page and the system settings fallbacks. -->
+    <queries>
+      <package android:name="com.miui.securitycenter" />
+      <intent>
+        <action android:name="android.settings.APPLICATION_DETAILS_SETTINGS" />
+        <data android:scheme="package" />
+      </intent>
+      <intent>
+        <action android:name="android.settings.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+        <data android:scheme="package" />
+      </intent>
+      <intent>
+        <action android:name="android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS" />
+      </intent>
+      <intent>
+        <action android:name="android.settings.AIRPLANE_MODE_SETTINGS" />
+      </intent>
+      <intent>
+        <action android:name="android.settings.NETWORK_OPERATOR_SETTINGS" />
+      </intent>
+      <intent>
+        <action android:name="android.settings.WIRELESS_SETTINGS" />
+      </intent>
+      <intent>
+        <action android:name="android.settings.SETTINGS" />
+      </intent>
+    </queries>
+    <!-- Requirement 16.22: no Auto Backup and no device-to-device transfer of app data. -->
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
       android:icon="@mipmap/ic_launcher"
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
+      android:fullBackupContent="false"
+      android:dataExtractionRules="@xml/data_extraction_rules"
       android:theme="@style/AppTheme"
       android:usesCleartextTraffic="${usesCleartextTraffic}"
       android:supportsRtl="true">
@@ -23,5 +71,53 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
+
+      <!-- Long-lived Headless JS host for the gateway loop. -->
+      <service
+        android:name=".gateway.GatewayService"
+        android:exported="false"
+        android:foregroundServiceType="specialUse">
+        <property
+          android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+          android:value="SMS auto-reply gateway: receives SMS questions and sends short answers by SMS while the screen is off" />
+      </service>
+
+      <!-- Short Headless JS task per message while the gateway is paused. -->
+      <service
+        android:name=".gateway.PausedInboxTaskService"
+        android:exported="false" />
+
+      <!-- Only the system (holder of BROADCAST_SMS) can deliver SMS_RECEIVED here. -->
+      <receiver
+        android:name=".gateway.SmsReceiver"
+        android:exported="true"
+        android:permission="android.permission.BROADCAST_SMS">
+        <intent-filter android:priority="999">
+            <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+        </intent-filter>
+      </receiver>
+
+      <!-- Sent-status PendingIntents are explicit, so no intent-filter is needed. -->
+      <receiver
+        android:name=".gateway.SendResultReceiver"
+        android:exported="false" />
+
+      <!-- BOOT_COMPLETED and MY_PACKAGE_REPLACED are protected system broadcasts. -->
+      <receiver
+        android:name=".gateway.BootReceiver"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="android.intent.action.BOOT_COMPLETED" />
+            <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+        </intent-filter>
+      </receiver>
+
+      <!-- AlarmManager targets; explicit PendingIntents only. -->
+      <receiver
+        android:name=".gateway.WatchdogReceiver"
+        android:exported="false" />
+      <receiver
+        android:name=".gateway.RestartReceiver"
+        android:exported="false" />
     </application>
 </manifest>

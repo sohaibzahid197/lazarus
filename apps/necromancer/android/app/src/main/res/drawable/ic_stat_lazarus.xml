@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Monochrome status-bar icon for the gateway notification: a heartbeat spike. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:fillColor="#FFFFFFFF"
+      android:pathData="M2,11h5l2,-5l3,12l3,-9l2,2h5v2h-6l-1,-1l-3,9l-3,-12l-1,2h-6z" />
+</vector>
