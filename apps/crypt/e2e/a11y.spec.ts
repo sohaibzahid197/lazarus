@@ -124,7 +124,8 @@ test('Tab order follows Requirement 16.1 with a visible focus outline', async ({
     'The Crypt',
     'Messages',
     'Message',
-    'Input: Keypad',
+    // Focusing the Message box switches to Keyboard_Input, so the toggle now reads Keyboard.
+    'Input: Keyboard',
     ...KEYPAD_KEYS.map(keyAccessibleName),
     'Clear',
     'Send',

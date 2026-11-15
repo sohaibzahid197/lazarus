@@ -3,7 +3,8 @@
 // (Requirements 2.6, 3.1, 5.1–5.8). Presentational: the parent owns the text,
 // the T9State, the Input_Mode and the length warning, and decides in `onSend`
 // whether a Message_Body can be sent. Styles come from globals.css.
-import type { ChangeEvent, KeyboardEvent } from 'react';
+import { useRef, type ChangeEvent, type KeyboardEvent } from 'react';
+import { flushSync } from 'react-dom';
 import { MAX_BODY_UNITS } from '../protocol/limits';
 import { pendingOf, type T9State } from '../t9/t9.step';
 import { composeUnits, truncateCompose } from './compose';
@@ -23,12 +24,27 @@ export interface ComposeFieldProps {
   readonly onTextChange: (text: string, truncated: boolean) => void;
   /** Enter without Shift, outside an IME composition (5.2, 5.7, 5.8). */
   readonly onSend: () => void;
+  /**
+   * The Keypad_Input field got focus (click, tap or Tab): switch to
+   * Keyboard_Input so physical typing always works. The T9 keypad buttons
+   * still switch back to Keypad_Input when clicked.
+   */
+  readonly onKeyboardFocus: () => void;
 }
 
 const COUNTER_ID = 'compose-counter';
 const WARNING_ID = 'compose-warning';
 
-export function ComposeField({ inputMode, text, t9, lengthWarning, onTextChange, onSend }: ComposeFieldProps) {
+export function ComposeField({
+  inputMode,
+  text,
+  t9,
+  lengthWarning,
+  onTextChange,
+  onSend,
+  onKeyboardFocus,
+}: ComposeFieldProps) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const pending = inputMode === 'keypad' ? pendingOf(t9) : null;
   const shown = text + (pending ?? '');
   const units = pending === null ? text.length : composeUnits(text, t9);
@@ -38,6 +54,17 @@ export function ComposeField({ inputMode, text, t9, lengthWarning, onTextChange,
     const raw = e.target.value;
     const next = truncateCompose(raw);
     onTextChange(next, next.length < raw.length);
+  };
+
+  // Render the textarea in the same event, then focus it with the caret at the
+  // end. Focusing inside the user's gesture lets mobile browsers open the
+  // on-screen keyboard.
+  const handleKeypadFieldFocus = () => {
+    flushSync(onKeyboardFocus);
+    const area = textareaRef.current;
+    if (area === null) return;
+    area.focus();
+    area.setSelectionRange(area.value.length, area.value.length);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -52,6 +79,7 @@ export function ComposeField({ inputMode, text, t9, lengthWarning, onTextChange,
     <div className="compose">
       {inputMode === 'keyboard' ? (
         <textarea
+          ref={textareaRef}
           className="compose__field"
           aria-label="Message"
           aria-describedby={describedBy}
@@ -66,11 +94,11 @@ export function ComposeField({ inputMode, text, t9, lengthWarning, onTextChange,
         <div
           className="compose__field"
           role="textbox"
-          aria-readonly="true"
           aria-multiline="true"
           aria-label="Message"
           aria-describedby={describedBy}
           tabIndex={0}
+          onFocus={handleKeypadFieldFocus}
           dir={textDirection(shown)}
           lang={hasUrdu(shown) ? 'ur' : undefined}
         >

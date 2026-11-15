@@ -107,6 +107,17 @@ export function OuijaSimulator() {
     });
   }, [timer, update]);
 
+  // Focusing the Message box always allows physical typing: commit any
+  // Pending_Character and switch to Keyboard_Input (no-op if already there).
+  const onKeyboardFocus = useCallback(() => {
+    if (composeRef.current.inputMode === 'keyboard') return;
+    timer.stop();
+    update((c) => {
+      const edit = switchInputMode(c.text, c.t9);
+      return { ...withText(c, edit.text, edit.t9, false), inputMode: 'keyboard' };
+    });
+  }, [timer, update]);
+
   const onClear = useCallback(() => {
     timer.stop();
     update((c) => {
@@ -165,6 +176,7 @@ export function OuijaSimulator() {
         sendDisabled={sendDisabled(state, isMessageBody(compose.text + pending))}
         onTextChange={onTextChange}
         onToggleInputMode={onToggleInputMode}
+        onKeyboardFocus={onKeyboardFocus}
         onKey={onKey}
         onClear={onClear}
         onSend={onSend}

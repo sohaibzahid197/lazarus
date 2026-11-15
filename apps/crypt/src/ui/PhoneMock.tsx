@@ -41,6 +41,8 @@ export interface PhoneMockProps {
   readonly sendDisabled: boolean;
   readonly onTextChange: (text: string, truncated: boolean) => void;
   readonly onToggleInputMode: () => void;
+  /** The Message box got focus in Keypad_Input: switch to Keyboard_Input. */
+  readonly onKeyboardFocus: () => void;
   readonly onKey: (key: T9Key, at: number) => void;
   readonly onClear: () => void;
   readonly onSend: () => void;
@@ -86,6 +88,7 @@ export function PhoneMock(props: PhoneMockProps) {
         lengthWarning={props.lengthWarning}
         onTextChange={props.onTextChange}
         onSend={props.onSend}
+        onKeyboardFocus={props.onKeyboardFocus}
       />
       <div className="phone__controls">
         <button
