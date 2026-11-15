@@ -17,6 +17,19 @@ const clock: Clock = {
 };
 
 let loop: GatewayLoop | null = null;
+
+/**
+ * Yields to the event loop (each turn drains every pending microtask) until `cond`
+ * holds. Waiting on a condition instead of a fixed number of microtask rounds keeps
+ * the test independent of how many promise hops the loop happens to take.
+ */
+async function waitFor(cond: () => boolean, what: string): Promise<void> {
+  for (let i = 0; i < 500; i++) {
+    if (cond()) return;
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+  }
+  throw new Error(`timed out waiting for ${what}`);
+}
 afterEach(async () => {
   await loop?.stop();
   loop = null;
@@ -31,14 +44,14 @@ async function start(): Promise<{ mock: MockPorts; sync: SettingsSync; ui: Retur
   const sync = createSettingsSync();
   const ui = createGatewayStore();
   loop = startGatewayLoop(mock.ports, clock, { ui, settingsSync: sync, log: () => undefined });
-  await mock.settle(200);
-  expect(mock.callsTo('attachLoop')).toHaveLength(1);
+  await waitFor(() => mock.callsTo('attachLoop').length === 1, 'attachLoop');
   return { mock, sync, ui };
 }
 
 async function send(mock: MockPorts, id: string, sender: string, at: number): Promise<string | undefined> {
+  const before = mock.callsTo('appendActivity').length;
   mock.pushInbound(inbound(id, sender, 'HELP', at));
-  await mock.settle(200);
+  await waitFor(() => mock.callsTo('appendActivity').length > before, `activity for ${id}`);
   const entry = mock.callsTo('appendActivity').at(-1)?.args[0] as { outcome?: string } | undefined;
   return entry?.outcome;
 }
@@ -89,20 +102,26 @@ describe('settings reload', () => {
     });
     const sync = createSettingsSync();
     loop = startGatewayLoop(mock.ports, clock, { ui: createGatewayStore(), settingsSync: sync, log: () => undefined });
-    await mock.settle(20);
+    await waitFor(() => mock.callsTo('loadState').length === 1, 'loadState');
     sync.publish({ settings: { ...DEFAULT_SETTINGS, perNumberLimit: 1 } });
     release();
-    await mock.settle(200);
+    await waitFor(() => mock.callsTo('attachLoop').length === 1, 'attachLoop');
     expect(await send(mock, 'm1', A, T0)).toBe('replied');
     expect(await send(mock, 'm2', A, T0 + 1)).toBe('rate-limited');
   });
 
   it('stops listening after the loop stops', async () => {
     const { mock, sync } = await start();
-    await loop?.stop();
+    const stopping = loop;
     loop = null;
-    const before = mock.calls.length;
+    await stopping?.stop();
+    await stopping?.finished;
+    const notifications = mock.callsTo('updateNotification').length;
+    const calls = mock.calls.length;
     sync.publish({ settings: { ...DEFAULT_SETTINGS, dailySendCap: 1 } });
-    expect(mock.calls.length).toBe(before);
+    // Give any stray listener a full event-loop turn to react.
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+    expect(mock.callsTo('updateNotification')).toHaveLength(notifications);
+    expect(mock.calls).toHaveLength(calls);
   });
 });

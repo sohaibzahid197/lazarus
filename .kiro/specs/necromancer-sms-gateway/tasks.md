@@ -159,7 +159,7 @@ Optional marking: test sub-tasks marked `*` may be skipped for a faster MVP. Tes
     - **Property 27: Activity_Log keeps the newest 200**
     - **Validates: Requirements 14.3, 14.4**
 
-- [~] 6. Checkpoint - Ensure all tests pass
+- [x] 6. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [x] 7. Implement the Stop_Alias_List and export script
@@ -371,7 +371,7 @@ Optional marking: test sub-tasks marked `*` may be skipped for a faster MVP. Tes
     - File `gateway.exports.test.ts`: import every public function from the package entry; `expectTypeOf` checks for `Outcome` and `SleepReason`
     - _Requirements: 17.6, 17.10_
 
-- [~] 14. Checkpoint - Ensure all brain tests pass
+- [x] 14. Checkpoint - Ensure all brain tests pass
   - Run `vitest --run`, `tsc --noEmit` and lint in `packages/brain`; the suite finishes within 120 s. Ensure all tests pass, ask the user if questions arise.
 
 - [x] 15. Configure the Necromancer build and manifest
@@ -491,10 +491,10 @@ Optional marking: test sub-tasks marked `*` may be skipped for a faster MVP. Tes
     - `BaseReactPackage` registering `GatewayModule`, `StoreModule`, `DeviceModule`, `KeyStoreModule`
     - _Requirements: 17.2, 17.3_
 
-- [~] 21. Checkpoint - Ensure the build and tests pass
+- [x] 21. Checkpoint - Ensure the build and tests pass
   - Run `./gradlew assembleDebug` and the JVM tests in `android`, and `jest` in `apps/necromancer`. Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 22. Implement the JS gateway glue
+- [x] 22. Implement the JS gateway glue
   - [x] 22.1 Create `src/gateway/commitQueue.ts`
     - One promise chain for all writes; batches with `stop-add`/`stop-remove` retry 3 times at 1 s, then raise the "Stop list could not be saved" banner
     - _Requirements: 3.6, 3.12_
@@ -519,23 +519,23 @@ Optional marking: test sub-tasks marked `*` may be skipped for a faster MVP. Tes
     - `LazarusPausedInbox`: load state, apply pending stops, `runGatewayPipeline` with `paused: true` and `answer: null`, commit a STOP (on final failure `savePendingStop(sender, receivedAt)`), append the Activity_Entry, end; never starts the Gateway_Service
     - _Requirements: 9.10, 9.11, 9.12, 9.13, 9.15_
 
-  - [~] 22.7 Update `index.js`
+  - [x] 22.7 Update `index.js`
     - `registerComponent`, `registerHeadlessTask('LazarusGateway')` for the loop, `registerHeadlessTask('LazarusPausedInbox')` for the paused task
     - _Requirements: 9.6, 9.12_
 
-  - [~] 22.8 Write Jest tests for the loop glue
+  - [x] 22.8 Write Jest tests for the loop glue
     - File `__tests__/loop.test.ts`: call order `loadState` → `readKey` → `takePendingStops`/`applyPendingStop` → `attachLoop` → `takeNextInbound`; commit before the next take; `completeInbound` after commit; `cancelPendingSends` after `stopped`; 3 retries then banner; `loadState` rejection holds the queue; `appendActivity` rejection keeps processing; `unreadable` key does not crash
     - _Requirements: 3.6, 3.9, 3.11, 3.12, 14.12, 16.20_
 
-  - [~] 22.9 Write Jest tests for the paused path and Pending_Stop_Records
+  - [x] 22.9 Write Jest tests for the paused path and Pending_Stop_Records
     - File `__tests__/pausedPath.test.ts`: a paused `STOP please call me` whose commit fails stores exactly `sender`, `marker: 'STOP'`, `receivedAt` and none of the body text; a persisted record is applied before a live message and before a Pending_Inbox message; the record is deleted after success and kept after 4 failures; a paused HELP records `ignored-paused`, no `savePendingStop`, no service start, no AI call
     - _Requirements: 9.10, 9.12, 9.13, 9.15, 9.16, 14.13, 18.14_
 
-  - [~] 22.10 Write source guard tests
+  - [x] 22.10 Write source guard tests
     - File `__tests__/sourceGuards.test.ts`: `apps/necromancer/src` contains no `process.env`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `: any` or `as any`; no file under `apps/necromancer` matches the API key pattern; no Kotlin file under `android/app/src` contains `"band"` or `"بند"`
     - _Requirements: 16.1, 16.2, 16.24, 17.6, 17.7, 17.11_
 
-- [ ] 23. Implement the UI
+- [x] 23. Implement the UI
   - [x] 23.1 Create `src/ui/theme.ts`
     - Exactly the design tokens: colours, radius 14, spacing 4/8/12/16/24/32, minimum font 16
     - _Requirements: 17.8, 17.9_
@@ -556,12 +556,12 @@ Optional marking: test sub-tasks marked `*` may be skipped for a faster MVP. Tes
     - Three explanations (≤ 300 characters each), privacy statement above the continue button, request only missing permissions after the tap, ask-again list, App info button for `never_ask_again`, 4 restricted-settings steps, re-check on `AppState` `active`
     - _Requirements: 11.2, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8, 11.9, 11.10_
 
-  - [~] 23.6 Create `src/ui/screens/SetupScreen.tsx`
+  - [x] 23.6 Create `src/ui/screens/SetupScreen.tsx`
     - 6 Setup_Steps in order with ≤ 120-character explanations, live done marks from Device_Status and the key store, persisted manual marks for Autostart and recent apps, fallback instructions after a failed intent that stay visible, Main_Screen button only when all done
     - AI key step: Key_Input_Field (no autocorrect, suggestions or capitalisation; value in component state, cleared on save and unmount), `validateApiKey`, `API_KEY_INVALID_MESSAGE`, "key saved" with `maskApiKey`, remove-key confirmation, "paste the key again" when unreadable
     - _Requirements: 12.1, 12.2, 12.3, 12.4, 12.5, 12.6, 12.7, 12.8, 12.9, 12.11, 12.12, 12.14, 16.3, 16.4, 16.5, 16.7, 16.8, 16.9, 16.10, 16.11, 16.20_
 
-  - [~] 23.7 Create `src/ui/screens/MainScreen.tsx`
+  - [x] 23.7 Create `src/ui/screens/MainScreen.tsx`
     - Heartbeat with `deriveHeartbeat`, one SLEEPING sentence and fix button per Sleep_Reason, 4 day counters, banners (cap reached, AI key missing with a button to the AI key step, Stop_List or Allowlist unreadable, settings reset, phone status unreadable after 5 s), Activity_Log newest first with local time and masked `who`, clear with confirmation, start/pause/resume, Setup and Settings buttons
     - _Requirements: 3.11, 3.12, 4.9, 5.9, 9.1, 9.5, 9.7, 9.8, 9.9, 12.10, 13.7, 13.11, 13.12, 13.15, 14.4, 14.5, 14.9, 14.10, 14.11, 15.5, 16.19_
 
@@ -569,29 +569,29 @@ Optional marking: test sub-tasks marked `*` may be skipped for a faster MVP. Tes
     - Edit fields through `validateSettingsField` with range messages, Allowlist add through `addToAllowlist` with duplicate, invalid and full messages, Allowlist and Stop_List shown through `maskNumber`, Stop_List read-only, "Change not saved" on failure
     - _Requirements: 4.4, 4.5, 4.6, 4.7, 4.10, 5.10, 5.11, 14.5, 15.1, 15.6, 15.7_
 
-  - [~] 23.9 Update `App.tsx`
+  - [x] 23.9 Update `App.tsx`
     - State-based screen switcher using `chooseStartScreen`; Permission_Screen opened from the permissions step returns to Setup_Screen; opening Setup_Screen does not stop the Gateway_Service
     - _Requirements: 11.1, 11.9, 12.10, 12.12, 12.13, 17.3_
 
-  - [~] 23.10 Write Jest tests for start screen, setup and key UI
+  - [x] 23.10 Write Jest tests for start screen, setup and key UI
     - File `__tests__/setupAndKey.test.tsx`: `chooseStartScreen` for each combination; 6 Setup_Step done marks from mocked status; Key_Input_Field cleared after save and the Masked_Key shown; invalid key shows the fixed message with no save call; remove-key confirm and cancel; missing-key banner on Main_Screen; `readKey` unreadable renders without crashing
     - _Requirements: 12.6, 12.13, 16.4, 16.5, 16.7, 16.8, 16.9, 16.11, 16.19, 16.20, 18.12_
 
-  - [~] 23.11 Write Jest tests for Permission, Main and Settings screens
+  - [x] 23.11 Write Jest tests for Permission, Main and Settings screens
     - File `__tests__/screens.test.tsx`: explanation lengths and privacy text placement; only missing permissions requested; `never_ask_again` App info button; restricted steps; each heartbeat word rendered; reduced motion with no `Animated.loop`; SLEEPING sentence ≤ 120 characters and correct fix action; cap banner; activity clear dialog; no rendered text with 4+ consecutive digits of a mocked number; Settings range and Allowlist messages
     - _Requirements: 11.2, 11.3, 11.4, 11.6, 11.7, 13.7, 13.9, 13.10, 14.5, 14.9, 14.11, 4.5, 4.10, 5.11_
 
-- [ ] 24. Write the Necromancer README
-  - [~] 24.1 Update `apps/necromancer/README.md`
+- [x] 24. Write the Necromancer README
+  - [x] 24.1 Update `apps/necromancer/README.md`
     - Debug build (`cd android && ./gradlew assembleDebug`) and sideload (`adb install -r app/build/outputs/apk/debug/app-debug.apk`); HyperOS setup (restricted settings, permissions, AI key, Autostart, battery "No restrictions", lock in recents)
     - "Known limitations" section with the three limitations, including the 60-second Send_Timeout and 30-second retry wait delaying later replies beyond 30 seconds
     - _Requirements: 17.2, 17.12_
 
-  - [~] 24.2 Write a Jest test for the README and the stop alias asset
+  - [x] 24.2 Write a Jest test for the README and the stop alias asset
     - File `__tests__/docs.test.ts`: README has a `Known limitations` heading and mentions the 60-second Send_Timeout, the 30-second retry wait, the fallback STOP detection and unlogged paused messages; running the export script into a temp file equals `stopAliasAsset()`
     - _Requirements: 17.7, 17.12_
 
-- [~] 25. Final checkpoint - Ensure all tests pass
+- [x] 25. Final checkpoint - Ensure all tests pass
   - Run `vitest --run` in `packages/brain`, `jest` in `apps/necromancer`, `tsc --noEmit` in both, the Kotlin JVM tests and `./gradlew assembleDebug`. Ensure all tests pass, ask the user if questions arise.
 
 - [~] 26. Manual on-device checklist (Xiaomi, Android 15, HyperOS)

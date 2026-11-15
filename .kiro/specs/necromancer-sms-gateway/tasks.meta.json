@@ -669,6 +669,16 @@
         "executionId": "f2fc5d9e-d767-4971-9c8d-e8b1e01dfb3e",
         "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
         "timestamp": 1794679695775
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726757213
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726921953
       }
     ],
     "7.1 Create `stopAliases.ts` and update `router.ts`": [
@@ -1407,6 +1417,11 @@
         "executionId": "f2fc5d9e-d767-4971-9c8d-e8b1e01dfb3e",
         "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
         "timestamp": 1794679697139
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726929347
       }
     ],
     "15.1 Update `android/build.gradle` and `android/app/build.gradle`": [
@@ -1839,6 +1854,11 @@
         "executionId": "f2fc5d9e-d767-4971-9c8d-e8b1e01dfb3e",
         "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
         "timestamp": 1794679697884
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726934341
       }
     ],
     "22.1 Create `src/gateway/commitQueue.ts`": [
@@ -1948,6 +1968,16 @@
         "executionId": "f2fc5d9e-d767-4971-9c8d-e8b1e01dfb3e",
         "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
         "timestamp": 1794679698075
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794725708722
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726025557
       }
     ],
     "22.8 Write Jest tests for the loop glue": [
@@ -1955,6 +1985,16 @@
         "executionId": "f2fc5d9e-d767-4971-9c8d-e8b1e01dfb3e",
         "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
         "timestamp": 1794679698101
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794725709707
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726027005
       }
     ],
     "22.9 Write Jest tests for the paused path and Pending_Stop_Records": [
@@ -1962,6 +2002,16 @@
         "executionId": "f2fc5d9e-d767-4971-9c8d-e8b1e01dfb3e",
         "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
         "timestamp": 1794679698134
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794725710705
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726028490
       }
     ],
     "22.10 Write source guard tests": [
@@ -1969,6 +2019,16 @@
         "executionId": "f2fc5d9e-d767-4971-9c8d-e8b1e01dfb3e",
         "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
         "timestamp": 1794679698166
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794725711407
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726030002
       }
     ],
     "23.1 Create `src/ui/theme.ts`": [
@@ -2071,6 +2131,16 @@
         "executionId": "f2fc5d9e-d767-4971-9c8d-e8b1e01dfb3e",
         "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
         "timestamp": 1794722105184
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794725369769
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794725670186
       }
     ],
     "23.7 Create `src/ui/screens/MainScreen.tsx`": [
@@ -2088,6 +2158,16 @@
         "executionId": "f2fc5d9e-d767-4971-9c8d-e8b1e01dfb3e",
         "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
         "timestamp": 1794722106727
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794725369873
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794725670894
       }
     ],
     "23.8 Create `src/ui/screens/SettingsScreen.tsx`": [
@@ -2105,6 +2185,16 @@
         "executionId": "f2fc5d9e-d767-4971-9c8d-e8b1e01dfb3e",
         "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
         "timestamp": 1794722108077
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794725707537
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726031038
       }
     ],
     "23.9 Update `App.tsx`": [
@@ -2112,6 +2202,16 @@
         "executionId": "f2fc5d9e-d767-4971-9c8d-e8b1e01dfb3e",
         "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
         "timestamp": 1794679698451
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726044728
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726347935
       }
     ],
     "23.10 Write Jest tests for start screen, setup and key UI": [
@@ -2119,6 +2219,16 @@
         "executionId": "f2fc5d9e-d767-4971-9c8d-e8b1e01dfb3e",
         "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
         "timestamp": 1794679698482
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726417191
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726654284
       }
     ],
     "23.11 Write Jest tests for Permission, Main and Settings screens": [
@@ -2126,6 +2236,16 @@
         "executionId": "f2fc5d9e-d767-4971-9c8d-e8b1e01dfb3e",
         "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
         "timestamp": 1794679698507
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726418186
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726655183
       }
     ],
     "24.1 Update `apps/necromancer/README.md`": [
@@ -2133,6 +2253,16 @@
         "executionId": "f2fc5d9e-d767-4971-9c8d-e8b1e01dfb3e",
         "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
         "timestamp": 1794679698532
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726419514
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726653883
       }
     ],
     "24.2 Write a Jest test for the README and the stop alias asset": [
@@ -2140,6 +2270,16 @@
         "executionId": "f2fc5d9e-d767-4971-9c8d-e8b1e01dfb3e",
         "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
         "timestamp": 1794679698556
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726660105
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726737186
       }
     ],
     "25. Final checkpoint - Ensure all tests pass": [
@@ -2147,6 +2287,11 @@
         "executionId": "f2fc5d9e-d767-4971-9c8d-e8b1e01dfb3e",
         "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
         "timestamp": 1794679698584
+      },
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726941072
       }
     ],
     "26. Manual on-device checklist (Xiaomi, Android 15, HyperOS)": [
@@ -2280,6 +2425,27 @@
         "executionId": "f2fc5d9e-d767-4971-9c8d-e8b1e01dfb3e",
         "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
         "timestamp": 1794721494034
+      }
+    ],
+    "22. Implement the JS gateway glue": [
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726030037
+      }
+    ],
+    "23. Implement the UI": [
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726655226
+      }
+    ],
+    "24. Write the Necromancer README": [
+      {
+        "executionId": "ebef4458-b2be-400a-8bd2-6a915c04fcb1",
+        "chatSessionId": "sess_e818eab5-9a6d-4878-aae4-f29897bbe1fa",
+        "timestamp": 1794726737252
       }
     ]
   }

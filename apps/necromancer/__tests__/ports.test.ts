@@ -78,7 +78,8 @@ describe('decodeInbound', () => {
   });
 
   it('drops a payload with a missing field', () => {
-    const { body: _body, ...missing } = valid;
+    const missing: Record<string, unknown> = { ...valid };
+    delete missing.body;
     expect(decodeInbound(missing, log)).toBeNull();
     expect(lines).toHaveLength(1);
   });
@@ -155,8 +156,8 @@ describe('decodeDeviceStatus', () => {
   });
 
   it('turns wrong-typed and missing fields into false and names them', () => {
-    const { airplaneMode: _a, ...rest } = valid;
-    const raw = { ...rest, smsPermission: 'yes' };
+    const raw: Record<string, unknown> = { ...valid, smsPermission: 'yes' };
+    delete raw.airplaneMode;
     expect(decodeDeviceStatus(raw, log)).toEqual({ ...valid, smsPermission: false, airplaneMode: false });
     expect(lines).toEqual(['ports: device status fields dropped: smsPermission, airplaneMode']);
   });

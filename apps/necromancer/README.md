@@ -1,97 +1,82 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Necromancer
 
-# Getting Started
+Necromancer is the Android app that turns an old Android phone into the Lazarus SMS gateway. It receives SMS, asks `@lazarus/brain` for a reply, and sends the reply back by SMS. A foreground service keeps the gateway running, and it starts again after a reboot.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+The target phone is a Xiaomi phone on Android 15 (HyperOS). The app is installed as a sideloaded debug APK. There is no Play Store release.
 
-## Step 1: Start Metro
+## Requirements
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- Node.js on your `PATH`. The build uses it to export the STOP keywords from `@lazarus/brain` (see below).
+- JDK 17 and the Android SDK (compile SDK 35 or later).
+- `adb` and a phone with USB debugging turned on.
+- A free Gemini API key from Google AI Studio. You enter it in the app, not in a file.
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Build the debug APK
 
-```sh
-# Using npm
-npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
+Install dependencies first:
 
 ```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+cd apps/necromancer
+npm install
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+Then build:
 
 ```sh
-bundle install
+cd android && ./gradlew assembleDebug
 ```
 
-Then, and every time you update your native dependencies, run:
+The APK is written to `android/app/build/outputs/apk/debug/app-debug.apk`. The JavaScript bundle is built into the APK, so the phone does not need Metro.
+
+### STOP keyword export
+
+The phone checks for STOP with a native fallback when the app cannot start its JavaScript task. That check uses the STOP keywords exported by `@lazarus/brain`, so there is only one keyword list.
+
+The `generateStopAliases` Gradle task runs `packages/brain/scripts/export-stop-aliases.ts` before assets are merged. It writes `android/app/build/generated/lazarus/assets/stop_aliases.json`, which is packed into the APK and never committed. If Gradle cannot find `node`, pass its path:
 
 ```sh
-bundle exec pod install
+./gradlew assembleDebug -PnodeExecutable=/path/to/node
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+To run the export by hand:
 
 ```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+cd packages/brain
+npm run export:stop-aliases -- --out /tmp/stop_aliases.json
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+## Install on the phone
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+With the phone connected over USB, from `apps/necromancer/android`:
 
-## Step 3: Modify your app
+```sh
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
 
-Now that you have successfully run the app, let's make changes!
+`-r` keeps the app data, so the Stop_List, settings and AI key survive a reinstall.
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+## Set up the phone (HyperOS)
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+Open the app. It shows a permission screen and then a setup screen with these steps, in this order:
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+1. **Allow restricted settings.** Android blocks SMS permissions for sideloaded apps until you allow them. Open **Settings > Apps > Manage apps > Necromancer**, tap the **⋮** menu and choose **Allow restricted settings**.
+2. **Grant SMS and notification permissions.** Allow receiving SMS, sending SMS and notifications. The app explains each one before Android asks.
+3. **Save the AI key.** Paste your Gemini free-tier key and tap save. The key is stored encrypted on the phone and shown masked after saving. Without a key, questions get a short "try later" reply. HELP, STOP and START still work.
+4. **Turn on Autostart.** Open **Settings > Apps > Manage apps > Necromancer > Autostart** and turn it on, so the gateway starts after a reboot.
+5. **Set battery to "No restrictions".** Open **Settings > Apps > Manage apps > Necromancer > Battery saver** and choose **No restrictions**, so HyperOS does not stop the gateway.
+6. **Lock the app in recent apps.** Open the recent apps view, press and hold the Necromancer card and tap the lock icon, so HyperOS does not clear it.
 
-## Congratulations! :tada:
+Tap each step in the app to open the right settings page. Steps 4 and 6 cannot be checked by the app, so mark them done yourself. When all six are done, the app opens the main screen. The heartbeat shows ALIVE when the gateway is running, or SLEEPING with the reason.
 
-You've successfully run and modified your React Native App. :partying_face:
+## Tests
 
-### Now what?
+```sh
+cd apps/necromancer && npx jest
+cd packages/brain && npm test
+```
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+## Known limitations
 
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- **Replies can take longer than 30 seconds during radio failures.** Replies are sent one at a time. When the phone has no service or the radio fails, a send can wait up to the 60-second Send_Timeout and then the 30-second retry wait. Later replies wait behind it, so they can arrive more than 30 seconds after the message was received.
+- **Fallback STOP detection while paused can miss unusual text.** When the gateway is paused and Android refuses to start the app's JavaScript task, a simple native check decides whether a message is STOP. It uses the same STOP keywords as the command router but not its full text cleanup. A STOP written in unusual characters, such as fullwidth letters (`ＳＴＯＰ`), can be missed in this case.
+- **Unlogged paused messages.** In that same fallback case, a message that is not a STOP is dropped without an activity entry. The main screen counters do not include it.
