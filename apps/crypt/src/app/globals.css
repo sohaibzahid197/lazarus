@@ -1,0 +1,696 @@
+/* Theme of the Crypt_App (design section 8, Requirement 14.1).
+   Hex colors appear only in :root; every rule below uses the Theme_Tokens.
+   Radius is always var(--radius); margins, paddings and gaps use the spacing scale. */
+
+:root {
+  --bg: #0B0F0C;
+  --surface: #141A16;
+  --text: #E6F2E9;
+  --muted: #8FA396;
+  --soul: #39FF88;
+  --ember: #FFB347;
+  --blood: #FF4D5E;
+  --radius: 14px;
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+  /* --font-display is set by next/font on <html>; this is the fallback. */
+  --font-heading: var(--font-display, Georgia, 'Times New Roman', serif);
+  color-scheme: dark;
+}
+
+/* ---------- Base ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  margin: 0;
+}
+
+h1 {
+  font-size: 1.75rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+}
+
+a {
+  color: var(--soul);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+p {
+  margin: 0;
+}
+
+/* Focus outline: 2 px soul green, above 3:1 on bg and surface (Requirement 16.2). */
+:focus-visible {
+  outline: 2px solid var(--soul);
+  outline-offset: 2px;
+}
+
+/* Hidden from sight, still read by screen readers (Requirements 16.4, 16.11). */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Shared header (Requirement 15.9) ---------- */
+
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  background: var(--surface);
+  border-bottom: 1px solid color-mix(in srgb, var(--muted) 40%, transparent);
+}
+
+.site-header__title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--soul);
+}
+
+.site-header__links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s4);
+  margin: 0;
+  padding: 0;
+}
+
+.site-header__link {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.site-header__link[aria-current='page'] {
+  color: var(--soul);
+  font-weight: 700;
+}
+
+/* ---------- Ouija_Simulator layout (Requirement 2.1, 2.2) ---------- */
+
+.simulator {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s5);
+  padding: var(--s4);
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.simulator__title {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 768px) {
+  .simulator {
+    grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
+    align-items: start;
+    padding: var(--s5);
+  }
+}
+
+/* ---------- Phone_Mock ---------- */
+
+.phone {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+  width: 100%;
+  max-width: 400px;
+  padding: var(--s4);
+  background: var(--surface);
+  border: 2px solid color-mix(in srgb, var(--muted) 50%, transparent);
+  border-radius: var(--radius);
+}
+
+/* SENDING: ember glow around the Phone_Mock (Requirement 14.4). */
+.phone--sending {
+  border-color: var(--ember);
+  box-shadow: 0 0 var(--s4) color-mix(in srgb, var(--ember) 55%, transparent);
+  animation: ember-glow 1.2s ease-in-out infinite alternate;
+}
+
+.phone--sleeping {
+  border-color: var(--muted);
+}
+
+.phone--error {
+  border-color: var(--blood);
+}
+
+@keyframes ember-glow {
+  from {
+    box-shadow: 0 0 var(--s2) color-mix(in srgb, var(--ember) 35%, transparent);
+  }
+  to {
+    box-shadow: 0 0 var(--s5) color-mix(in srgb, var(--ember) 70%, transparent);
+  }
+}
+
+.phone__status {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+}
+
+.phone__error {
+  color: var(--blood);
+}
+
+.phone__mode {
+  align-self: flex-end;
+  padding: 0 var(--s2);
+  color: var(--muted);
+  border: 1px solid color-mix(in srgb, var(--muted) 60%, transparent);
+  border-radius: var(--radius);
+}
+
+.phone__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+
+.phone__button {
+  flex: 1 1 auto;
+  min-height: 44px;
+  padding: var(--s2) var(--s3);
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--muted);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.phone__button:hover:not(:disabled) {
+  border-color: var(--soul);
+}
+
+.phone__button--send {
+  background: var(--soul);
+  color: var(--bg);
+  border-color: var(--soul);
+  font-weight: 700;
+}
+
+.phone__button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.phone__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+}
+
+.phone__reminders-note {
+  color: var(--muted);
+}
+
+/* ---------- Heartbeat (Requirements 14.2–14.9) ---------- */
+
+.heartbeat {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+}
+
+.heartbeat__svg {
+  flex: 0 0 auto;
+  width: 96px;
+  height: 24px;
+  overflow: visible;
+}
+
+.heartbeat__label {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.heartbeat--alive {
+  color: var(--soul);
+}
+
+.heartbeat--sending {
+  color: var(--ember);
+}
+
+.heartbeat--sleeping {
+  color: var(--muted);
+}
+
+.heartbeat--error {
+  color: var(--blood);
+}
+
+/* One soul-green pulse per added part, finished within 600 ms (14.7). */
+.heartbeat__line--pulse {
+  animation: heartbeat-pulse 600ms ease-out 1;
+}
+
+@keyframes heartbeat-pulse {
+  0% {
+    stroke: var(--soul);
+    stroke-width: 4;
+    filter: drop-shadow(0 0 4px var(--soul));
+  }
+  100% {
+    stroke: currentColor;
+    stroke-width: 2;
+    filter: none;
+  }
+}
+
+/* ---------- STOP banner and Replies_Left ---------- */
+
+.stop-banner {
+  padding: var(--s2) var(--s3);
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--muted);
+  border-radius: var(--radius);
+}
+
+.replies-left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+}
+
+.replies-left__count {
+  font-weight: 700;
+}
+
+.replies-left__hint {
+  color: var(--ember);
+}
+
+/* ---------- Phone_Screen and bubbles (Requirements 2.4, 2.5, 11.2–11.4) ---------- */
+
+.phone-screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+  min-height: 0;
+}
+
+.phone-screen__thread {
+  list-style: none;
+  margin: 0;
+  padding: var(--s2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+  min-height: 12rem;
+  max-height: 24rem;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  background: var(--bg);
+  border-radius: var(--radius);
+}
+
+.phone-screen__item {
+  display: flex;
+  max-width: 85%;
+}
+
+.phone-screen__item--in {
+  align-self: flex-start;
+}
+
+.phone-screen__item--out {
+  align-self: flex-end;
+}
+
+.bubble {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+  padding: var(--s2) var(--s3);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.bubble--outgoing {
+  border: 1px solid var(--soul);
+}
+
+.bubble--part,
+.bubble--reminder-part {
+  border: 1px solid var(--muted);
+}
+
+/* Status_Notes are not SMS: muted text, dashed border, no badge. */
+.bubble--note {
+  background: transparent;
+  color: var(--muted);
+  border: 1px dashed var(--muted);
+}
+
+.bubble__text {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.bubble__label {
+  color: var(--soul);
+  font-size: 1rem;
+}
+
+.bubble__badge {
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+/* ---------- Compose_Field (Requirements 2.6, 3.1, 5.1–5.8) ---------- */
+
+.compose {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+}
+
+.compose__field {
+  display: block;
+  width: 100%;
+  min-height: 4.5rem;
+  padding: var(--s2) var(--s3);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  border: 1px solid var(--muted);
+  border-radius: var(--radius);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  resize: vertical;
+}
+
+.compose__pending {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  color: var(--soul);
+}
+
+.compose__counter {
+  align-self: flex-end;
+  color: var(--muted);
+}
+
+.compose__warning {
+  color: var(--ember);
+}
+
+/* ---------- T9_Keypad (Requirements 2.1, 3.10) ---------- */
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s2);
+}
+
+.keypad__key {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: var(--s1);
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid color-mix(in srgb, var(--muted) 60%, transparent);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.keypad__key:hover {
+  border-color: var(--soul);
+}
+
+.keypad__key:active {
+  background: color-mix(in srgb, var(--soul) 15%, var(--bg));
+}
+
+.keypad__digit {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.keypad__letters {
+  font-size: 1rem;
+  color: var(--muted);
+  line-height: 1.2;
+}
+
+/* ---------- Example messages (Requirements 2.2, 2.3) ---------- */
+
+.examples {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+  min-width: 0;
+}
+
+.examples__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+
+.examples__button {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--s2) var(--s3);
+  text-align: start;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid color-mix(in srgb, var(--muted) 60%, transparent);
+  border-radius: var(--radius);
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.examples__button:hover {
+  border-color: var(--soul);
+}
+
+/* ---------- Reduced motion (Requirements 14.8, 16.6) ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+
+  .phone-screen__thread {
+    scroll-behavior: auto;
+  }
+}
+
+/* Dashboard-specific rules (task 16.2) go below this line. */
+
+/* ---------- Crypt_Dashboard (Requirement 15, task 16.2) ---------- */
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s5);
+  max-width: 880px;
+  margin: 0 auto;
+  padding: var(--s4);
+}
+
+@media (min-width: 768px) {
+  .dashboard {
+    padding: var(--s5);
+  }
+}
+
+.dashboard__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+  padding: var(--s4);
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--muted) 40%, transparent);
+  border-radius: var(--radius);
+}
+
+.dashboard__text--muted {
+  color: var(--muted);
+}
+
+.dashboard__commands,
+.dashboard__counters {
+  margin: 0;
+  display: grid;
+  gap: var(--s3);
+}
+
+.dashboard__command {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+}
+
+.dashboard__command-name {
+  color: var(--soul);
+  font-weight: 700;
+}
+
+.dashboard__command-name code {
+  font-size: 1rem;
+}
+
+.dashboard__command-text {
+  margin: 0;
+}
+
+.dashboard__demo-label {
+  align-self: flex-start;
+  padding: 0 var(--s2);
+  color: var(--ember);
+  border: 1px solid var(--ember);
+  border-radius: var(--radius);
+}
+
+.dashboard__counters {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.dashboard__counter {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--s1);
+  padding: var(--s3);
+  background: var(--bg);
+  border-radius: var(--radius);
+}
+
+.dashboard__counter-name {
+  color: var(--muted);
+}
+
+.dashboard__counter-value {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--soul);
+}
+
+.dashboard__conversation,
+.dashboard__legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+
+.dashboard__message {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+  max-width: 85%;
+  padding: var(--s2) var(--s3);
+  background: var(--bg);
+  border-radius: var(--radius);
+  overflow-wrap: anywhere;
+}
+
+.dashboard__message--incoming {
+  align-self: flex-start;
+  border: 1px solid var(--muted);
+}
+
+.dashboard__message--outgoing {
+  align-self: flex-end;
+  border: 1px solid var(--soul);
+}
+
+.dashboard__message-meta {
+  color: var(--muted);
+}
+
+.dashboard__message-text {
+  white-space: pre-wrap;
+}
+
+.dashboard__legend-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+  padding: var(--s3);
+  background: var(--bg);
+  border: 1px solid color-mix(in srgb, var(--muted) 40%, transparent);
+  border-radius: var(--radius);
+}
+
+/* Static ember glow so the legend shows what SENDING looks like (15.6). */
+.dashboard__legend-item--sending {
+  border-color: var(--ember);
+  box-shadow: 0 0 var(--s3) color-mix(in srgb, var(--ember) 45%, transparent);
+}
+
+.dashboard__legend-look {
+  color: var(--muted);
+}

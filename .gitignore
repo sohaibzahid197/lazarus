@@ -5,6 +5,11 @@ node_modules/
 build/
 dist/
 .next/
+apps/crypt/.next/
+apps/crypt/test-results/
+apps/crypt/playwright-report/
+apps/crypt/next-env.d.ts
+*.tsbuildinfo
 *.keystore
 local.properties
 .DS_Store
