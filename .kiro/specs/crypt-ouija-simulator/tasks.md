@@ -554,7 +554,7 @@ Optional marking: test sub-tasks marked `*` may be skipped for a faster MVP. The
     - File `e2e/privacy.spec.ts` on port 3101 (fake test key): `/` and `/crypt` HTML and headers contain neither the test key nor the Simulator_Number with or without `+`
     - _Requirements: 17.8_
 
-- [-] 20. Final checkpoint - Ensure all tests pass
+- [x] 20. Final checkpoint - Ensure all tests pass
   - Run `npm test`, `npm run typecheck` and `npm run lint` from the repo root, and `npm run build` and `npm run e2e` in `apps/crypt` (run `npx playwright install chromium` once first). Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
