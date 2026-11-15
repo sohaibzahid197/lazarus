@@ -29,6 +29,7 @@ describe('gateway UI store', () => {
       banners: [],
       activity: [],
       inboundPulse: 0,
+      reminderCount: null,
     });
     expect(typeof gatewayStore.subscribe).toBe('function');
   });

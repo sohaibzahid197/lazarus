@@ -1,16 +1,19 @@
 // Permission_Screen, Main_Screen and Settings_Screen rendering tests
 // (Requirements 11.2, 11.3, 11.4, 11.6, 11.7, 13.7, 13.9, 13.10, 14.5, 14.9,
-// 14.11, 4.5, 4.10, 5.11).
+// 14.11, 4.5, 4.10, 5.11; sms-reminders 11.9, 13.6, 13.7, 14.7).
 import React from 'react';
 import ReactTestRenderer, { type ReactTestInstance, type ReactTestRenderer as Renderer } from 'react-test-renderer';
 import {
   AccessibilityInfo,
   Alert,
   Animated,
+  AppState,
   Text,
   TextInput,
   type AlertButton,
+  type AppStateStatus,
   type EmitterSubscription,
+  type NativeEventSubscription,
 } from 'react-native';
 import {
   DEFAULT_SETTINGS,
@@ -45,6 +48,7 @@ import {
   BANNER_TEXT,
   MAX_SLEEP_SENTENCE_LENGTH,
   MainScreen,
+  REMINDER_ROW_TEXT,
   SLEEP_FIXES,
   SLEEP_SENTENCES,
   type SleepFixAction,
@@ -255,6 +259,8 @@ type MainSetup = {
   readonly service?: ServiceStatus;
   readonly prepare?: (store: GatewayStore) => void;
   readonly activity?: readonly ActivityEntry[];
+  /** Scripts the mock ports before the screen mounts. */
+  readonly script?: (mock: MockPorts) => void;
 };
 
 type MainRender = {
@@ -272,6 +278,7 @@ async function renderMain(setup: MainSetup = {}): Promise<MainRender> {
   mock.scripts.getServiceStatus.setDefault(() => service);
   const activity = setup.activity ?? [];
   mock.scripts.loadActivity.setDefault(() => [...activity]);
+  setup.script?.(mock);
   const store = createGatewayStore();
   setup.prepare?.(store);
   const onOpenPermissions = jest.fn();
@@ -412,6 +419,126 @@ describe('MainScreen banners and activity', () => {
     expect(shown).toContain(maskNumber(CALLER));
     expectNoDigitsOf(shown, CALLER);
     expectNoDigitsOf(shown, OTHER);
+  });
+});
+
+// ---------------------------------------------------------------- reminder UI (sms-reminders)
+
+type AppStateHandler = (state: AppStateStatus) => void;
+
+/** Captures every AppState 'change' listener so a test can bring the app back to the foreground. */
+function captureAppState(): { readonly activate: () => Promise<void> } {
+  const handlers: AppStateHandler[] = [];
+  jest.spyOn(AppState, 'addEventListener').mockImplementation(((_type: string, handler: AppStateHandler) => {
+    handlers.push(handler);
+    return { remove: () => undefined } as unknown as NativeEventSubscription;
+  }) as typeof AppState.addEventListener);
+  return {
+    activate: async () => {
+      await ReactTestRenderer.act(async () => {
+        handlers.forEach((h) => h('active'));
+      });
+    },
+  };
+}
+
+function reminderRows(r: Renderer): ReactTestInstance[] {
+  return r.root.findAll(
+    (n) =>
+      typeof n.props.accessibilityLabel === 'string' &&
+      String(n.props.accessibilityLabel).startsWith(REMINDER_ROW_TEXT.label) &&
+      typeof n.type === 'string',
+  );
+}
+
+describe('MainScreen reminder count row (13.6, 13.7)', () => {
+  it.each([0, 3])('shows %i reminders waiting', async (count) => {
+    const { r } = await renderMain({ prepare: (s) => s.setReminderCount(count) });
+    const rows = reminderRows(r);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].props.accessibilityLabel).toBe(`${REMINDER_ROW_TEXT.label}: ${count}`);
+    expect(rows[0].findAllByType(Text).map(textOf)).toEqual([String(count), REMINDER_ROW_TEXT.label]);
+    expect(texts(r)).not.toContain(REMINDER_ROW_TEXT.loading);
+  });
+
+  it('shows the loading text until the count is known', async () => {
+    const { r, store } = await renderMain();
+    expect(texts(r)).toContain(REMINDER_ROW_TEXT.loading);
+    expect(reminderRows(r)).toEqual([]);
+    await ReactTestRenderer.act(async () => {
+      store.setReminderCount(2);
+    });
+    expect(texts(r)).not.toContain(REMINDER_ROW_TEXT.loading);
+    expect(reminderRows(r)[0].props.accessibilityLabel).toBe(`${REMINDER_ROW_TEXT.label}: 2`);
+  });
+
+  it('shows the unreadable message in place of the count, once, as an alert', async () => {
+    const { r } = await renderMain({
+      prepare: (s) => {
+        s.setReminderCount(3);
+        s.setBanner('reminders-unreadable', true);
+      },
+    });
+    const message = BANNER_TEXT['reminders-unreadable'];
+    expect(texts(r).filter((t) => t === message)).toHaveLength(1);
+    expect(reminderRows(r)).toEqual([]);
+    expect(texts(r)).not.toContain(REMINDER_ROW_TEXT.label);
+    expect(texts(r)).not.toContain(REMINDER_ROW_TEXT.loading);
+    const alert = r.root.find(
+      (n) => n.props.accessibilityRole === 'alert' && typeof n.type === 'string' && n.findAllByType(Text).some((t) => textOf(t) === message),
+    );
+    expect(alert).toBeDefined();
+  });
+
+  it('shows the reminders-save-failed banner', async () => {
+    const { r } = await renderMain({
+      prepare: (s) => {
+        s.setReminderCount(1);
+        s.setBanner('reminders-save-failed', true);
+      },
+    });
+    expect(texts(r)).toContain(BANNER_TEXT['reminders-save-failed']);
+    expect(reminderRows(r)[0].props.accessibilityLabel).toBe(`${REMINDER_ROW_TEXT.label}: 1`);
+  });
+});
+
+describe('MainScreen exact alarm banner (11.9)', () => {
+  const late = BANNER_TEXT['reminders-may-be-late'];
+
+  it('shows no banner when exact alarms are allowed', async () => {
+    const { r, mock } = await renderMain();
+    expect(mock.callsTo('getExactAlarmAccess')).toHaveLength(1);
+    expect(texts(r)).not.toContain(late);
+    expect(buttons(r, 'Allow exact alarms')).toEqual([]);
+  });
+
+  it('shows the banner without access; the button opens the exact alarm settings', async () => {
+    const { r, mock } = await renderMain({
+      script: (m) => m.scripts.getExactAlarmAccess.setDefault(() => false),
+    });
+    expect(texts(r)).toContain(late);
+    mock.clearCalls();
+    await press(r, 'Allow exact alarms');
+    expect(mock.calls.map((c) => c.method)).toEqual(['openExactAlarmSettings']);
+  });
+
+  it('re-checks on AppState active and hides the banner once access is granted', async () => {
+    const appState = captureAppState();
+    const { r, mock } = await renderMain({
+      script: (m) => m.scripts.getExactAlarmAccess.setDefault(() => false),
+    });
+    expect(mock.callsTo('getExactAlarmAccess')).toHaveLength(1);
+    expect(texts(r)).toContain(late);
+
+    await appState.activate();
+    expect(mock.callsTo('getExactAlarmAccess')).toHaveLength(2);
+    expect(texts(r)).toContain(late);
+
+    mock.scripts.getExactAlarmAccess.setDefault(() => true);
+    await appState.activate();
+    expect(mock.callsTo('getExactAlarmAccess')).toHaveLength(3);
+    expect(texts(r)).not.toContain(late);
+    expect(buttons(r, 'Allow exact alarms')).toEqual([]);
   });
 });
 

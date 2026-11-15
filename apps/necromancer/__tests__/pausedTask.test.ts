@@ -36,11 +36,14 @@ describe('pausedTask', () => {
     expect(ui.getSnapshot().counters?.ignored).toBe(1);
   });
 
-  it('commits a STOP and logs stopped', async () => {
+  it('commits a STOP with its reminder removal and logs stopped', async () => {
     const { mock, task } = setup();
     await task({ sender: SENDER, body: 'STOP', receivedAt: AT });
-    const changes = mock.callsTo('commit').flatMap((c) => c.args[0] as { type: string }[]);
-    expect(changes).toContainEqual({ type: 'stop-add', number: SENDER });
+    const commits = mock.callsTo('commit').map((c) => c.args[0] as { type: string }[]);
+    expect(commits).toHaveLength(1);
+    // STOP while paused removes the sender's reminders in the same commit (sms-reminders 8.1).
+    expect(commits[0]).toContainEqual({ type: 'stop-add', number: SENDER });
+    expect(commits[0]).toContainEqual({ type: 'reminder-remove-all', number: SENDER });
     expect(mock.callsTo('appendActivity').map((c) => c.args[0])).toEqual([
       expect.objectContaining({ outcome: 'stopped', command: 'STOP' }),
     ]);

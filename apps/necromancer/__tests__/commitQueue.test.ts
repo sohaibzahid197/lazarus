@@ -12,6 +12,11 @@ const NUMBER = '+923001234567' as CanonicalNumber;
 const STOP: StateChange[] = [{ type: 'stop-add', number: NUMBER }];
 const UNSTOP: StateChange[] = [{ type: 'stop-remove', number: NUMBER }];
 const RATE: StateChange[] = [{ type: 'rate-record', number: NUMBER, at: 1 }];
+const STOP_WITH_REMINDERS: StateChange[] = [
+  { type: 'stop-add', number: NUMBER },
+  { type: 'reminder-remove-all', number: NUMBER },
+];
+const REMINDERS_ONLY: StateChange[] = [{ type: 'reminder-remove-all', number: NUMBER }];
 const ENTRY: ActivityEntry = { receivedAt: 1, who: '••••567', command: 'STOP', outcome: 'stopped' };
 
 interface Setup {
@@ -130,6 +135,24 @@ describe('Stop_List retries', () => {
     await expect(next).resolves.toBeUndefined();
     expect(mock.names().at(-1)).toBe('appendActivity');
     expect(logs.join('\n')).not.toContain('3001234567');
+  });
+
+  it('retries a STOP batch with its reminder removal as one Stop_List write (sms-reminders 8.1, 8.6)', async () => {
+    const { mock, queue, banner } = setup();
+    mock.scripts.commit.reject('locked', 1);
+    const result = queue.enqueue(STOP_WITH_REMINDERS);
+    await jest.advanceTimersByTimeAsync(STOP_LIST_RETRY_MS);
+    await expect(result).resolves.toBeUndefined();
+    expect(mock.callsTo('commit').map((c) => c.args[0])).toEqual([STOP_WITH_REMINDERS, STOP_WITH_REMINDERS]);
+    expect(banner).not.toHaveBeenCalled();
+  });
+
+  it('does not retry a reminder-only batch as a Stop_List write', async () => {
+    const { mock, queue, banner } = setup();
+    mock.scripts.commit.reject('busy');
+    await expect(queue.enqueue(REMINDERS_ONLY)).rejects.toThrow('busy');
+    expect(mock.callsTo('commit')).toHaveLength(1);
+    expect(banner).not.toHaveBeenCalled();
   });
 
   it('retries applyPendingStop when it changes the Stop_List', async () => {

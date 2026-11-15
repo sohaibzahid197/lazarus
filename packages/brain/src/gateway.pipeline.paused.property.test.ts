@@ -67,7 +67,10 @@ function expectPausedDecision(decision: GatewayDecision, sc: Scenario, body: str
   const isStop = sc.kind === 'phone' && routeCommand(body).command === 'STOP';
   if (isStop) {
     expect(decision.outcome).toBe('stopped');
-    expect(decision.changes).toEqual([{ type: 'stop-add', number: sc.number }]);
+    expect(decision.changes).toEqual([
+            { type: 'stop-add', number: sc.number },
+            { type: 'reminder-remove-all', number: sc.number },
+          ]);
   } else {
     expect(decision.outcome).toBe('ignored-paused');
     expect(decision.changes).toEqual([]);

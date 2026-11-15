@@ -27,8 +27,10 @@ object GatewayLifecycle {
   fun shouldRunOnStart(paused: Boolean?): Boolean = paused != true
 
   /**
-   * Exact alarms only when the OS allows them (API < 31, or `canScheduleExactAlarms()`);
-   * the app declares no `SCHEDULE_EXACT_ALARM`, so most API 31+ phones get INEXACT.
+   * Exact alarms only when the OS allows them (API < 31, or `canScheduleExactAlarms()`).
+   * The app declares `SCHEDULE_EXACT_ALARM` (not `USE_EXACT_ALARM`), so on API 31+ the
+   * Operator must grant Exact_Alarm_Access in settings; until then alarms are INEXACT.
+   * Used by the watchdog, restart and reminder alarms ([dev.lazarus.necromancer.reminder.ReminderAlarmPolicy.mode]).
    */
   fun alarmMode(sdkInt: Int, canScheduleExact: Boolean): AlarmMode =
     if (sdkInt < 31 || canScheduleExact) AlarmMode.EXACT else AlarmMode.INEXACT

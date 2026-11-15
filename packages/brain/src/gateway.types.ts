@@ -1,6 +1,15 @@
 // Gateway_Module core types (necromancer-sms-gateway design, "Core types").
 // No type here other than InboundMessage carries the SMS body text
-// (Requirement 14.7): GatewayDecision and StateChange never hold it.
+// (Requirement 14.7): GatewayDecision never holds it, and no StateChange holds it
+// except `reminder-add`, whose Reminder carries the Reminder_Text taken from a
+// REMIND body (sms-reminders design, "Reminder_Store_Model").
+import { DELIVERY_OUTCOMES } from './reminder.types.js';
+import type {
+  DeliveryOutcome,
+  Reminder,
+  ReminderId,
+  ReminderState,
+} from './reminder.types.js';
 import type { Command, Language } from './router.types.js';
 
 /** E.164-style number, validated by isCanonicalNumber: /^\+[1-9]\d{6,14}$/. */
@@ -60,6 +69,7 @@ export interface GatewayState {
   readonly slowDown: ReadonlyMap<CanonicalNumber, number>; // receive time of last Slow_Down_Text
   readonly counters: DayCounters;
   readonly settings: GatewaySettings;
+  readonly reminders: ReminderState; // Reminder_Store (sms-reminders Requirement 12.7)
 }
 
 export interface PipelineContext {
@@ -74,7 +84,12 @@ export type StateChange =
   | { readonly type: 'slowdown-record'; readonly number: CanonicalNumber; readonly at: number }
   | { readonly type: 'counters'; readonly counters: DayCounters }
   | { readonly type: 'allow-add'; readonly number: CanonicalNumber }
-  | { readonly type: 'allow-remove'; readonly number: CanonicalNumber };
+  | { readonly type: 'allow-remove'; readonly number: CanonicalNumber }
+  /** The only StateChange carrying body-derived text (the Reminder_Text). */
+  | { readonly type: 'reminder-add'; readonly reminder: Reminder }
+  | { readonly type: 'reminder-remove'; readonly id: ReminderId }
+  | { readonly type: 'reminder-remove-all'; readonly number: CanonicalNumber }
+  | { readonly type: 'reminder-handed'; readonly id: ReminderId; readonly at: number };
 
 export interface GatewayDecision {
   readonly messageId: string;
@@ -104,8 +119,15 @@ export interface ActivityEntry {
   readonly receivedAt: number;
   readonly who: string; // maskNumber(...) or maskSender(...)
   readonly command: Command | 'NONE'; // 'NONE' when the router did not run
-  readonly outcome: Outcome;
+  readonly outcome: ActivityOutcome;
 }
+
+/**
+ * Every outcome an Activity_Entry can hold: Final_Outcomes, Delivery_Outcomes and
+ * `reminders-failed` (reminder processing failed, sms-reminders Requirement 11.15).
+ */
+export const ACTIVITY_OUTCOMES = [...OUTCOMES, ...DELIVERY_OUTCOMES, 'reminders-failed'] as const;
+export type ActivityOutcome = Outcome | DeliveryOutcome | 'reminders-failed';
 
 /** Sleep reasons in priority order (Requirement 13.3). */
 export const SLEEP_REASONS = [

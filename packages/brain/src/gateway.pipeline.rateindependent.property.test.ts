@@ -11,6 +11,7 @@ import {
 } from './gateway.arbitraries.js';
 import { applyChanges, runGatewayPipeline } from './gateway.pipeline.js';
 import type { CanonicalNumber, GatewayState, InboundMessage } from './gateway.types.js';
+import { EMPTY_REMINDERS } from './reminder.types.js';
 
 const MS_PER_MINUTE = 60_000;
 
@@ -133,6 +134,7 @@ describe('Gateway_Pipeline per-number rate limiting', () => {
     const a = '+923001234567' as CanonicalNumber;
     const b = '+923007654321' as CanonicalNumber;
     const state: GatewayState = {
+      reminders: EMPTY_REMINDERS,
       stopList: new Set(),
       allowlist: new Set(),
       rate: new Map(),

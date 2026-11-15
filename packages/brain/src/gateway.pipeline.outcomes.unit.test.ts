@@ -22,6 +22,7 @@ import {
   type SendReport,
 } from './gateway.types.js';
 import { splitSms } from './sms.js';
+import { EMPTY_REMINDERS } from './reminder.types.js';
 
 const DAY = '2024-01-01';
 const T0 = Date.UTC(2024, 0, 1, 6, 0);
@@ -32,6 +33,7 @@ const PAUSED: PipelineContext = { paused: true, today: DAY };
 const noTimer: NonNullable<PipelineDeps['startTimer']> = () => () => undefined;
 
 const baseState = (over: Partial<GatewayState> = {}): GatewayState => ({
+  reminders: EMPTY_REMINDERS,
   stopList: new Set(),
   allowlist: new Set(),
   rate: new Map(),
@@ -135,7 +137,10 @@ describe('gateway.pipeline: one example per Outcome (Requirement 7.4, 18.4)', ()
   it('stopped: STOP adds the number to the Stop_List with 0 Reply_Parts', async () => {
     const { decision, final, sends } = await scenario('stopped', msg('STOP'), baseState(), RUN);
     expect(decision.parts).toHaveLength(0);
-    expect(decision.changes).toContainEqual({ type: 'stop-add', number: NUM });
+    expect(decision.changes).toEqual([
+      { type: 'stop-add', number: NUM },
+      { type: 'reminder-remove-all', number: NUM },
+    ]);
     expect(final.partsSent).toBe(0);
     expect(sends).toHaveLength(0);
   });

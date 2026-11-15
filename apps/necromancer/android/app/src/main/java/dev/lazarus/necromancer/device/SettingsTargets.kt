@@ -47,6 +47,14 @@ object SettingsTargets {
     SYSTEM_SETTINGS,
   )
 
+  /** `Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM` (API 31); a literal so API 26 builds see no new symbol. */
+  const val ACTION_REQUEST_SCHEDULE_EXACT_ALARM = "android.settings.REQUEST_SCHEDULE_EXACT_ALARM"
+  /** Exact alarm access page for this app (reminders 11.9); App info when it does not resolve. */
+  val exactAlarm: List<SettingsTarget> = listOf(
+    SettingsTarget(ACTION_REQUEST_SCHEDULE_EXACT_ALARM, withPackageUri = true),
+    APP_INFO,
+    SYSTEM_SETTINGS,
+  )
   /**
    * Indexes of the targets worth trying, in order: those [resolves] accepts. The caller
    * starts them one by one and stops at the first that opens; index 0 means the

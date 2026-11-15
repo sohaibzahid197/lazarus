@@ -18,11 +18,13 @@ import { runGatewayPipeline, type PipelineDeps } from './gateway.pipeline.js';
 import { DEFAULT_SETTINGS } from './gateway.settings.js';
 import type { GatewayState, InboundMessage, PipelineContext } from './gateway.types.js';
 import { routeCommand } from './router.js';
+import { EMPTY_REMINDERS } from './reminder.types.js';
 
 const DAY = '2024-01-01';
 
 /** A clean state where nothing blocks the AI call: no lists, no rate history, cap unused. */
 const cleanState = (cc: string): GatewayState => ({
+  reminders: EMPTY_REMINDERS,
   stopList: new Set(),
   allowlist: new Set(),
   rate: new Map(),

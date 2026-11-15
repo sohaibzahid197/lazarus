@@ -19,6 +19,7 @@ import type {
 } from './gateway.types.js';
 import { routeCommand } from './router.js';
 import { joinSms, splitSms } from './sms.js';
+import { EMPTY_REMINDERS } from './reminder.types.js';
 
 const MS_PER_MINUTE = 60_000;
 /** Generous cap: 40 messages × at most 4 parts never reach it, so no reply is capped. */
@@ -69,6 +70,7 @@ const scenario: fc.Arbitrary<Scenario> = fc
 
 function initialState(sc: Scenario): GatewayState {
   return {
+    reminders: EMPTY_REMINDERS,
     stopList: new Set(),
     allowlist: new Set(),
     rate: new Map(),

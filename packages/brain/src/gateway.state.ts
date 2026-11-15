@@ -5,6 +5,7 @@ import { zeroCounters } from './gateway.counters.js';
 import { isCanonicalNumber } from './gateway.number.js';
 import { parseSettings, type ParsedSettings } from './gateway.settings.js';
 import type { CanonicalNumber, DayCounters, GatewayState, StateChange } from './gateway.types.js';
+import { decodeReminders, encodeReminder } from './reminder.state.js';
 
 /**
  * Result of decoding the `loadState()` JSON.
@@ -129,6 +130,8 @@ export function decodeStoredState(json: string, today: string): DecodedState {
     slowDown: decodeSlowDown(root.slowDown),
     counters: decodeCounters(root.counters, today),
     settings: parsed.settings,
+    // A missing or null key decodes as unreadable, never as empty (sms-reminders 12.7).
+    reminders: decodeReminders(root.reminders),
   };
   return { status: 'ok', state, paused: root.paused === true, settingsStatus: parsed.status };
 }
@@ -140,6 +143,14 @@ function encodeChange(c: StateChange): JsonRecord {
       return { type: c.type, number: c.number, at: c.at };
     case 'counters':
       return { type: c.type, counters: { ...c.counters } };
+    // Reminder changes (sms-reminders design, "`serializeChanges` additions").
+    case 'reminder-add':
+      return { type: c.type, reminder: encodeReminder(c.reminder) };
+    case 'reminder-remove':
+      return { type: c.type, id: c.id };
+    case 'reminder-handed':
+      return { type: c.type, id: c.id, at: c.at };
+    case 'reminder-remove-all':
     default:
       return { type: c.type, number: c.number };
   }

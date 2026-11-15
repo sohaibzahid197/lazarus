@@ -77,6 +77,13 @@ describe('paused STOP whose commit fails', () => {
 
     await task({ sender: A, body: 'STOP please call me', receivedAt: AT });
 
+    // Every attempt carried the reminder removal with the Stop_List change (sms-reminders 8.1).
+    expect(mock.callsTo('commit').length).toBeGreaterThan(0);
+    for (const c of mock.callsTo('commit')) {
+      const changes = c.args[0] as StateChange[];
+      expect(changes).toContainEqual({ type: 'stop-add', number: A });
+      expect(changes).toContainEqual({ type: 'reminder-remove-all', number: A });
+    }
     expect(mock.callsTo('savePendingStop').map((c) => c.args)).toEqual([[A, AT]]);
     expect(mock.pendingStops).toHaveLength(1);
     const record = mock.pendingStops[0];
@@ -100,6 +107,10 @@ describe('Pending_Stop_Record applied before any message (9.15)', () => {
     await waitFor(() => mock.callsTo('completeInbound').length === 1 && outcomesFor(mock).length === 1);
 
     expect(mock.callsTo('applyPendingStop')[0]?.args[0]).toBe(id);
+    expect(mock.callsTo('applyPendingStop')[0]?.args[1]).toEqual([
+      { type: 'stop-add', number: A },
+      { type: 'reminder-remove-all', number: A },
+    ]);
     expect(firstIndex(mock, 'applyPendingStop')).toBeLessThan(firstIndex(mock, 'takeNextInbound'));
     expect(mock.callsTo('applyPendingStop')[0]?.args[2]).toEqual(
       expect.objectContaining({ outcome: 'stopped', command: 'STOP' }),

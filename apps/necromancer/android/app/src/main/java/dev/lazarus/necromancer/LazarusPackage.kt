@@ -8,9 +8,10 @@ import com.facebook.react.module.model.ReactModuleInfoProvider
 import dev.lazarus.necromancer.device.DeviceModule
 import dev.lazarus.necromancer.gateway.GatewayModule
 import dev.lazarus.necromancer.keystore.KeyStoreModule
+import dev.lazarus.necromancer.reminder.ReminderModule
 import dev.lazarus.necromancer.store.StoreModule
 
-/** Registers the four Lazarus TurboModules with React Native. */
+/** Registers the five Lazarus TurboModules with React Native. */
 class LazarusPackage : BaseReactPackage() {
   override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? =
     when (name) {
@@ -18,6 +19,7 @@ class LazarusPackage : BaseReactPackage() {
       StoreModule.NAME -> StoreModule(reactContext)
       DeviceModule.NAME -> DeviceModule(reactContext)
       KeyStoreModule.NAME -> KeyStoreModule(reactContext)
+      ReminderModule.NAME -> ReminderModule(reactContext)
       else -> null
     }
 
@@ -27,6 +29,7 @@ class LazarusPackage : BaseReactPackage() {
       StoreModule.NAME to StoreModule::class.java.name,
       DeviceModule.NAME to DeviceModule::class.java.name,
       KeyStoreModule.NAME to KeyStoreModule::class.java.name,
+      ReminderModule.NAME to ReminderModule::class.java.name,
     ).associate { (name, className) -> name to turboModuleInfo(name, className) }
   }
 

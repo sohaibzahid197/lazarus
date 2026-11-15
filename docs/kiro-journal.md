@@ -34,3 +34,16 @@ Short notes on how Kiro was used. This becomes the Kiro write-up and blog.
 - Second round finished the other tasks. Settings_Screen saves now reach the running loop through `settingsSync`, so no service restart is needed. The Setup, Main and Settings screens, App.tsx and index.js are wired. New tests cover the loop, the paused path, the source guards, the screens, the setup and key flow, the README and the stop alias export. The settingsSync "stops listening" test now waits on conditions instead of counting microtasks.
 - Final checks: brain 1006 tests (122 files), typecheck and lint clean; Necromancer Jest 266 tests (23 suites), tsc clean, lint 0 errors, release JS bundle builds; Kotlin JVM 81 tests, 0 failures; `assembleDebug` builds `app-debug.apk`.
 - Still to do: task 26, the manual checklist on the Xiaomi phone (Android 15, HyperOS).
+## Spec 5: sms-reminders
+- Kiro ran the spec in orchestrator mode again, with parallel sub-agents on independent tasks.
+- Brain: the router now sends LIST and CANCEL to reminders. A Time_Parser reads English, Roman Urdu and Urdu-script times, a Pakistan_Time resolver turns them into instants, and a printer round-trips parsed times.
+- Brain: reminder store, pipeline and delivery decision. STOP always wins at delivery time, and each due reminder is handed off to the send queue exactly once. A fixed wire format carries reminders between JS and Kotlin.
+- Kotlin: schema v2 migration adds reminder storage inside a savepoint. One exact (or inexact, when exact alarms are not allowed) alarm is kept armed, with boot and alarm receivers.
+- Android ends the whole `onUpgrade` transaction on any statement starting with "ROL", so a plain `ROLLBACK TO` broke the savepoint. We send `;ROLLBACK TO` instead: Android treats it as an ordinary statement and SQLite skips the empty one.
+- The scheduler never re-arms sooner than 5 s, or 15 min while paused, so a reminder that cannot be delivered does not cause a tight alarm loop.
+- JS: a NativeReminders module, a reminder runner and a loop work item. Main_Screen shows a reminder count row and a banner when exact alarms are off.
+- Spec change: the Reminder_Text limit is now 140 UTF-16 code units, not 140 code points. Property 28 found that 140 emoji would need 4 SMS parts; the new limit keeps the delivery text in 1 to 3 parts.
+- Spec change: design Property 6 reworded, because "minute" plus "s" (= "minutes") is still a valid unit.
+- Spec change: `CANCEL ۱00` replies in Urdu, since Extended Arabic-Indic digits count as Urdu script. Which slot is cancelled does not change.
+- Spec change: when the Reminder_Store cannot be read, every REMIND, LIST and CANCEL, bare ones included, gets the Reminders_Unavailable_Text.
+- Final checks: brain 1299 tests (170 files), typecheck and lint clean; Necromancer Jest 344 tests (27 suites), passed 3 runs in a row, tsc clean, lint 0 errors (9 warnings); Kotlin JVM 113 tests (16 classes), 0 failures, fresh run; `assembleDebug` builds `app-debug.apk`.

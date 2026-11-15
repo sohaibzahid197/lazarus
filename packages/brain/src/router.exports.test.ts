@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
-import { detectLanguage, printCommand, routeCommand } from './index.js';
+import { COMMANDS, detectLanguage, printCommand, routeCommand } from './index.js';
 import type { Command, Language, RoutedCommand } from './index.js';
 
 describe('package entry exports', () => {
@@ -19,10 +19,23 @@ describe('package entry exports', () => {
 });
 
 describe('type-level checks', () => {
-  it('Command is the union of the 7 commands', () => {
+  it('Command is the union of the 9 commands', () => {
     expectTypeOf<Command>().toEqualTypeOf<
-      'HELP' | 'STOP' | 'START' | 'SCAM' | 'REMIND' | 'TRANSLATE' | 'QUESTION'
+      | 'HELP'
+      | 'STOP'
+      | 'START'
+      | 'SCAM'
+      | 'REMIND'
+      | 'TRANSLATE'
+      | 'LIST'
+      | 'CANCEL'
+      | 'QUESTION'
     >();
+  });
+  it('COMMANDS lists the 9 commands at runtime', () => {
+    expect(COMMANDS).toEqual([
+      'HELP', 'STOP', 'START', 'SCAM', 'REMIND', 'TRANSLATE', 'LIST', 'CANCEL', 'QUESTION',
+    ]);
   });
 
   it('Language is the union en | ur | roman-ur', () => {

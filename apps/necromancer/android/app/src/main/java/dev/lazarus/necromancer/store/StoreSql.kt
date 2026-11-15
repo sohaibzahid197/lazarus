@@ -1,7 +1,10 @@
 package dev.lazarus.necromancer.store
 
-/** One parameterized SQL write. Args are bound, never interpolated. */
-data class SqlOp(val sql: String, val args: List<Any>)
+/** One parameterized SQL write. Args are bound, never interpolated; `null` binds SQL NULL. */
+data class SqlOp(val sql: String, val args: List<Any?>) {
+  /** Hides the args, which may hold a number or a Reminder_Text (Requirement 13.2). */
+  override fun toString(): String = "SqlOp(${sql.substringBefore(' ')} ...)"
+}
 
 /** Pure SQL builders for the NativeStore writes. */
 object StoreSql {
@@ -18,6 +21,12 @@ object StoreSql {
   const val SELECT_PENDING_STOPS =
     "SELECT rowid, sender, marker, received_at FROM pending_stop ORDER BY received_at, rowid"
   const val DELETE_PENDING_STOP = "DELETE FROM pending_stop WHERE rowid = ?"
+  const val SELECT_REMINDERS =
+    "SELECT id, number, slot, due_at, text, language, created_at, handed_at FROM reminder ORDER BY number, slot"
+  const val SELECT_NEXT_REMINDER_DUE = "SELECT MIN(due_at) FROM reminder WHERE handed_at IS NULL"
+  const val INSERT_REMINDER =
+    "INSERT INTO reminder(id, number, slot, due_at, text, language, created_at, handed_at) " +
+      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 
   /** SQL for one change; `rate-record` also prunes records older than 24 h (design "SQLite schema"). */
   fun forChange(change: StoreChange): List<SqlOp> =
@@ -35,6 +44,21 @@ object StoreSql {
         listOf(SqlOp("INSERT OR REPLACE INTO slowdown(number, at) VALUES (?, ?)", listOf(change.number, change.at)))
       is StoreChange.Counters ->
         listOf(SqlOp("INSERT OR REPLACE INTO counters(id, json) VALUES (1, ?)", listOf(change.json)))
+      // A UNIQUE (number, slot) or primary key violation throws and fails the whole commit (12.2, 12.11).
+      is StoreChange.ReminderAdd ->
+        change.reminder.let { r ->
+          listOf(
+            SqlOp(
+              INSERT_REMINDER,
+              listOf(r.id, r.number, r.slot.toLong(), r.dueAt, r.text, r.language, r.createdAt, r.handedAt),
+            ),
+          )
+        }
+      is StoreChange.ReminderRemove -> listOf(SqlOp("DELETE FROM reminder WHERE id = ?", listOf(change.id)))
+      is StoreChange.ReminderRemoveAll ->
+        listOf(SqlOp("DELETE FROM reminder WHERE number = ?", listOf(change.number)))
+      is StoreChange.ReminderHanded ->
+        listOf(SqlOp("UPDATE reminder SET handed_at = ? WHERE id = ?", listOf(change.at, change.id)))
     }
 
   fun forChanges(changes: List<StoreChange>): List<SqlOp> = changes.flatMap(::forChange)

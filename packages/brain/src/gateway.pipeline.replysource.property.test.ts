@@ -17,10 +17,18 @@ import { zeroCounters } from './gateway.counters.js';
 import { runGatewayPipeline, type PipelineDeps } from './gateway.pipeline.js';
 import { DEFAULT_SETTINGS } from './gateway.settings.js';
 import { GATEWAY_TEXTS } from './gateway.texts.js';
-import type { GatewayState, InboundMessage, PipelineContext } from './gateway.types.js';
+import type {
+  CanonicalNumber,
+  GatewayState,
+  InboundMessage,
+  PipelineContext,
+} from './gateway.types.js';
 import { routeCommand } from './router.js';
 import type { Language, RoutedCommand } from './router.types.js';
 import { splitSms } from './sms.js';
+import { reminderReply, type ReminderCommand } from './reminder.pipeline.js';
+import { REMINDER_TEXTS } from './reminder.texts.js';
+import { EMPTY_REMINDERS } from './reminder.types.js';
 
 const DAY = '2024-01-01';
 const QUESTION_SENTINEL = 'SENTINEL answerQuestion reply.';
@@ -28,6 +36,7 @@ const SCAM_SENTINEL = 'SENTINEL checkScam reply.';
 
 /** Clean state: no lists, Allowlist_Mode off, no rate history, cap 2000, no Own_Number. */
 const cleanState = (cc: string): GatewayState => ({
+  reminders: EMPTY_REMINDERS,
   stopList: new Set(),
   allowlist: new Set(),
   rate: new Map(),
@@ -55,9 +64,22 @@ interface Expected {
   readonly scamCalls: number;
 }
 
-/** The "Reply text selection" table, written independently of the pipeline. */
-function expectedFor(routed: RoutedCommand): Expected {
+/** Where the message came from; REMIND's reply depends on number, id and receive time. */
+interface Origin {
+  readonly number: CanonicalNumber;
+  readonly messageId: string;
+  readonly receivedAt: number;
+}
+/**
+ * The "Reply text selection" table, written independently of the pipeline.
+ * The store is readable and empty, so LIST always gets the No_Reminders_Text and
+ * CANCEL the Cancel_Usage_Text (bare) or No_Such_Reminder_Text. REMIND's text
+ * depends on the Time_Parser and Due_Time_Resolver, so it comes from the
+ * Reminder_Module (sms-reminders Requirements 5, 6.1, 7.1, 7.3).
+ */
+function expectedFor(routed: RoutedCommand, origin: Origin): Expected {
   const { command, argument, argumentMissing, language } = routed;
+  const reminderTexts = REMINDER_TEXTS[language];
   const texts = GATEWAY_TEXTS[language];
   const fixed = (text: string): Expected => ({ text, questionCalls: 0, scamCalls: 0 });
   switch (command) {
@@ -71,9 +93,24 @@ function expectedFor(routed: RoutedCommand): Expected {
       return argumentMissing
         ? fixed(texts.usage.SCAM)
         : { text: SCAM_SENTINEL, questionCalls: 0, scamCalls: 1 };
-    case 'REMIND':
     case 'TRANSLATE':
-      return fixed(argumentMissing ? texts.usage[command] : texts.notAvailable);
+      return fixed(argumentMissing ? texts.usage.TRANSLATE : texts.notAvailable);
+    case 'REMIND': {
+      if (argumentMissing) return fixed(texts.usage.REMIND);
+      const reply = reminderReply(
+        routed as ReminderCommand,
+        origin.number,
+        origin.messageId,
+        origin.receivedAt,
+        EMPTY_REMINDERS,
+        splitSms,
+      );
+      return fixed(reply.text);
+    }
+    case 'LIST':
+      return fixed(reminderTexts.noReminders);
+    case 'CANCEL':
+      return fixed(argumentMissing ? reminderTexts.cancelUsage : reminderTexts.noSuch);
     case 'START':
       return fixed(texts.welcomeBack);
     case 'STOP':
@@ -100,7 +137,11 @@ describe('Gateway_Pipeline reply source', () => {
         async ([cc, formatted], receivedAt, text) => {
           const routed = routeCommand(text);
           fc.pre(routed.command !== 'STOP');
-          const expected = expectedFor(routed);
+          const expected = expectedFor(routed, {
+            number: formatted.number,
+            messageId: 'm1',
+            receivedAt,
+          });
 
           const questionCalls: Call[] = [];
           const scamCalls: Call[] = [];

@@ -2,7 +2,11 @@
 // "JS glue" loop outline and "Inbound message flow").
 //
 // Order at start: load state until the Stop_List is readable (3.7, 3.11, 15.2, 15.8)
-// → read the key → apply Pending_Stop_Records (9.15) → `attachLoop` → drain.
+// → read the key → apply Pending_Stop_Records (9.15) → reconcile reminders (8.8, 10.15)
+// → subscribe → `attachLoop` → drain, whose first step runs the due reminders (11.6).
+// Before each take the loop runs the due reminders when `remindersDue` is set and the
+// gateway is not paused; the idle wait also ends on `onRemindersDue` (sms-reminders
+// design, "Gateway loop work order"; 11.7, 11.14, 12.5).
 // Order per message: take → pipeline → commit (awaited, 3.6) → `completeInbound` (14.7)
 // → `cancelPendingSends` after `stopped` (3.9) → hand parts over without awaiting the
 // send (6.12) → finalize, counters, activity and notification (8.10, 9.2, 14.1).
@@ -10,11 +14,21 @@
 //
 // The loop never ends on its own (the headless task has no timeout); `stop()` exists
 // for tests. A second `startGatewayLoop` call returns the running instance.
-import { applyChanges, runGatewayPipeline, type InboundMessage } from '@lazarus/brain';
+import { runGatewayPipeline, type InboundMessage } from '@lazarus/brain';
 import type { GatewayPorts, LogFn, Unsubscribe } from '../native/ports';
 import { createAiHolder, type AiHolder } from './ai';
 import { createCommitQueue } from './commitQueue';
+import {
+  afterReminderChange,
+  commitDecision,
+  createReminderControl,
+  markRemindersDue,
+  runRemindersIfDue,
+  subscribeReminders,
+  type ReminderControl,
+} from './loopReminders';
 import { applyPendingStops } from './pendingStops';
+import { reconcileReminders } from './reminders';
 import { settingsSync as defaultSettingsSync, type SettingsSync, type SettingsUpdate } from './settingsSync';
 import { gatewayStore, type GatewayStore } from './store';
 import {
@@ -24,8 +38,10 @@ import {
   handOver,
   loadStateUntilReadable,
   refreshNotification,
+  showExactAlarmStatus,
   showKeyBanner,
   showLoaded,
+  showReminderStatus,
   systemClock,
   todayKey,
   type Clock,
@@ -54,6 +70,8 @@ export interface GatewayLoop {
 const defaultLog: LogFn = (line) => console.warn(line);
 
 let running: GatewayLoop | null = null;
+/** Marks reminders due on the running loop; set once its context is ready. */
+let nudgeRunning: (() => void) | null = null;
 
 function createStopSignal(): { stop: () => void; isStopped: () => boolean; race: StopRace } {
   let stopped = false;
@@ -74,18 +92,13 @@ function createStopSignal(): { stop: () => void; isStopped: () => boolean; race:
 async function processMessage(ctx: LoopContext, msg: InboundMessage): Promise<void> {
   ctx.ui.pulseInbound();
   const today = todayKey(ctx.clock, msg.receivedAt);
-  const decision = await runGatewayPipeline(
+  const decided = await runGatewayPipeline(
     msg,
     ctx.state,
     { paused: false, today },
     { answer: ctx.ai.answerDeps() },
   );
-  ctx.state = applyChanges(ctx.state, decision.changes); // kept even if the write fails (3.12)
-  try {
-    await ctx.commits.enqueue(decision.changes);
-  } catch {
-    ctx.log('loop: commit failed, change kept in memory');
-  }
+  const decision = await commitDecision(ctx, decided); // 3.6, 3.12, 12.11
   try {
     await ctx.ports.gateway.completeInbound(msg.id);
   } catch {
@@ -93,12 +106,35 @@ async function processMessage(ctx: LoopContext, msg: InboundMessage): Promise<vo
   }
   await cancelAfterStop(ctx, decision);
   void handOver(ctx, decision, today);
+  await afterReminderChange(ctx, decision.changes); // alarm follows the earliest Due_Time (11.3)
 }
 
-async function takeNext(ctx: LoopContext, race: StopRace): Promise<InboundMessage | null> {
+/**
+ * One outstanding `waitForInbound()` at a time: a wait that lost the race against
+ * `onRemindersDue` is reused by the next idle wait instead of being left behind.
+ */
+function sharedInboundWait(ctx: LoopContext): () => Promise<void> {
+  let pending: Promise<void> | null = null;
+  return () => {
+    if (pending === null) {
+      const wait = ctx.ports.gateway.waitForInbound();
+      pending = wait;
+      const clear = (): void => {
+        if (pending === wait) pending = null;
+      };
+      wait.then(clear, clear);
+    }
+    return pending;
+  };
+}
+async function takeNext(
+  ctx: LoopContext,
+  race: StopRace,
+  idleWait: () => Promise<void>,
+): Promise<InboundMessage | null> {
   try {
     const msg = await ctx.ports.gateway.takeNextInbound();
-    if (msg === null) await race(ctx.ports.gateway.waitForInbound());
+    if (msg === null) await race(idleWait());
     return msg;
   } catch {
     ctx.log('loop: takeNextInbound failed');
@@ -107,9 +143,24 @@ async function takeNext(ctx: LoopContext, race: StopRace): Promise<InboundMessag
   }
 }
 
-async function drain(ctx: LoopContext, signal: ReturnType<typeof createStopSignal>): Promise<void> {
+async function drain(
+  ctx: LoopContext,
+  control: ReminderControl,
+  signal: ReturnType<typeof createStopSignal>,
+): Promise<void> {
+  const inboundWait = sharedInboundWait(ctx);
+  const idleWait = async (): Promise<void> => {
+    const wake = control.wake.wait();
+    try {
+      await Promise.race([inboundWait(), wake.promise]);
+    } finally {
+      wake.cancel();
+    }
+  };
   while (!signal.isStopped()) {
-    const msg = await takeNext(ctx, signal.race);
+    await runRemindersIfDue(ctx, control); // between messages, never during one (12.5)
+    if (signal.isStopped()) break;
+    const msg = await takeNext(ctx, signal.race, idleWait);
     if (msg !== null) await processMessage(ctx, msg);
   }
 }
@@ -132,12 +183,24 @@ async function prepare(
     sleep: (ms) => clock.sleep(ms),
     log,
   });
-  const ctx: LoopContext = { ports, clock, log, ui, commits, ai, state: loaded.state };
+  const ctx: LoopContext = {
+    ports,
+    clock,
+    log,
+    ui,
+    commits,
+    ai,
+    state: loaded.state,
+    remindersDue: true, // loop start (sms-reminders 11.6)
+  };
   showLoaded(ctx, loaded, todayKey(clock));
+  showReminderStatus(ctx);
   showKeyBanner(ctx);
+  await showExactAlarmStatus(ports.reminders, ui, log); // 11.9
   const applied = await applyPendingStops(ports, ctx.state, { commits, log });
   ctx.state = applied.state;
   for (const entry of applied.entries) ui.addActivity(entry);
+  await reconcileReminders(ctx); // after the Stop_List is known, before any alarm (8.8)
   return ctx;
 }
 
@@ -175,28 +238,42 @@ async function run(
   }
   live = ctx;
   for (const update of early.splice(0)) applySettingsUpdate(ctx, update);
+  const control = createReminderControl();
   const offOthers = subscribe(ctx);
+  const offReminders = subscribeReminders(ctx, control);
+  nudgeRunning = () => {
+    control.paused = false; // the Gateway_Service started again, so it is not paused
+    markRemindersDue(ctx, control);
+  };
   const unsubscribe = (): void => {
+    nudgeRunning = null;
     offSettings();
     offOthers();
+    offReminders();
   };
   ports.gateway.attachLoop();
   refreshNotification(ctx);
   try {
-    await drain(ctx, signal);
+    await drain(ctx, control, signal);
   } finally {
     unsubscribe();
     await ctx.commits.idle();
   }
 }
 
-/** Starts the loop once per process; later calls return the running instance (9.1). */
+/**
+ * Starts the loop once per process; later calls return the running instance (9.1).
+ * A later call is a Gateway_Service start or resume, so it makes reminders due (11.6).
+ */
 export function startGatewayLoop(
   ports: GatewayPorts,
   clock: Clock = systemClock,
   options: GatewayLoopOptions = {},
 ): GatewayLoop {
-  if (running !== null) return running;
+  if (running !== null) {
+    nudgeRunning?.();
+    return running;
+  }
   const signal = createStopSignal();
   const log = options.log ?? defaultLog;
   const finished = run(ports, clock, options, signal).catch(() => log('loop: stopped by error'));

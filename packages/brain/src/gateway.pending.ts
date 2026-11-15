@@ -1,6 +1,7 @@
 // Pending_Stop_Records (necromancer-sms-gateway design, "Pending_Stop_Records").
 // A record holds no body: only the sender, the fixed STOP_MARKER and the
 // receive time (Requirement 9.13, 14.13). The rowid `id` is a storage handle.
+import { stopChanges } from './gateway.checks.js';
 import { normalizeSender } from './gateway.number.js';
 import type { GatewayDecision, GatewayState, Outcome, StateChange } from './gateway.types.js';
 import type { Language } from './router.types.js';
@@ -42,7 +43,8 @@ export function orderPendingStops(records: readonly PendingStopRecord[]): Pendin
 /**
  * Requirement 9.15. Runs only Automated_Sender, Own_Number and STOP handling.
  * Returns a decision with command 'STOP', 0 parts and outcome
- * 'ignored-automated' | 'ignored-own-number' (no changes) or 'stopped' (one stop-add).
+ * 'ignored-automated' | 'ignored-own-number' (no changes) or 'stopped'
+ * (stop-add and reminder-remove-all, sms-reminders 8.1).
  * Ignores paused, Allowlist_Mode, the Rate_Limiter and the Daily_Send_Cap (Requirement 3.2).
  */
 export function applyPendingStop(record: PendingStopRecord, state: GatewayState): GatewayDecision {
@@ -61,5 +63,5 @@ export function applyPendingStop(record: PendingStopRecord, state: GatewayState)
   if (state.settings.ownNumber !== null && sender.number === state.settings.ownNumber) {
     return decide('ignored-own-number', []);
   }
-  return decide('stopped', [{ type: 'stop-add', number: sender.number }]);
+  return decide('stopped', stopChanges(sender.number));
 }

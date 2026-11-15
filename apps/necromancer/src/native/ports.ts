@@ -9,19 +9,19 @@
 // they are required only inside `createLivePorts()`. Tests can import the decoders
 // and the `GatewayPorts` type without mocking native modules.
 import {
+  ACTIVITY_OUTCOMES,
   COMMANDS,
-  OUTCOMES,
   decodePendingStopRecord,
   decodeStoredState,
   maskSender,
   serializeChanges,
   type ActivityEntry,
+  type ActivityOutcome,
   type CanonicalNumber,
   type Command,
   type DecodedState,
   type DeviceStatus,
   type InboundMessage,
-  type Outcome,
   type PartResult,
   type PendingStopRecord,
   type SendReport,
@@ -32,6 +32,7 @@ import type { Spec as GatewaySpec } from './specs/NativeGateway';
 import type { Spec as StoreSpec } from './specs/NativeStore';
 import type { Spec as DeviceSpec } from './specs/NativeDevice';
 import type { Spec as KeyStoreSpec } from './specs/NativeKeyStore';
+import type { Spec as RemindersSpec } from './specs/NativeReminders';
 
 /** Receives one line; callers must never pass a body, a full number or a key. */
 export type LogFn = (line: string) => void;
@@ -110,12 +111,25 @@ export interface KeyStorePort {
   deleteKey(): Promise<void>;
 }
 
+/** Reminder alarm control (sms-reminders Requirements 11.4, 11.9). Carries no number or text. */
+export interface RemindersPort {
+  /** Re-arms the single alarm from the earliest Due_Time not handed, or cancels it. */
+  reschedule(): Promise<void>;
+  /** Arms the alarm 60 s from now (Requirement 11.15). */
+  scheduleRetry(): Promise<void>;
+  /** false unless native answers exactly `true` (shows the "may be late" banner). */
+  getExactAlarmAccess(): Promise<boolean>;
+  openExactAlarmSettings(): Promise<void>;
+  onRemindersDue(listener: () => void): Unsubscribe;
+}
+
 /** One object Jest can mock (Requirement 18.11). */
 export interface GatewayPorts {
   readonly gateway: GatewayPort;
   readonly store: StorePort;
   readonly device: DevicePort;
   readonly keyStore: KeyStorePort;
+  readonly reminders: RemindersPort;
 }
 
 // ---------------------------------------------------------------- helpers
@@ -125,7 +139,7 @@ type JsonRecord = Record<string, unknown>;
 const PART_RESULTS: readonly PartResult[] = ['sent', 'failed-radio', 'failed-no-service', 'failed-other'];
 const SERVICE_STATUSES: readonly ServiceStatus[] = ['running', 'stopped', 'paused'];
 const ACTIVITY_COMMANDS: readonly string[] = [...COMMANDS, 'NONE'];
-const OUTCOME_LIST: readonly string[] = OUTCOMES;
+const OUTCOME_LIST: readonly string[] = ACTIVITY_OUTCOMES;
 
 function isRecord(value: unknown): value is JsonRecord {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -294,7 +308,7 @@ function decodeActivityEntry(raw: unknown): ActivityEntry | null {
   if (!isTime(receivedAt) || typeof who !== 'string') return null;
   if (typeof command !== 'string' || !ACTIVITY_COMMANDS.includes(command)) return null;
   if (typeof outcome !== 'string' || !OUTCOME_LIST.includes(outcome)) return null;
-  return { receivedAt, who, command: command as Command | 'NONE', outcome: outcome as Outcome };
+  return { receivedAt, who, command: command as Command | 'NONE', outcome: outcome as ActivityOutcome };
 }
 
 /** Malformed entries are dropped; a non-array payload is an empty log. */
@@ -315,6 +329,13 @@ export function decodeActivity(raw: unknown, log: LogFn): ActivityEntry[] {
   return out;
 }
 
+/** Exact-alarm access: anything but a boolean is treated as denied, with one log line. */
+export function decodeExactAlarmAccess(raw: unknown, log: LogFn): boolean {
+  if (typeof raw === 'boolean') return raw;
+  log('ports: exact alarm access unreadable, treated as denied');
+  return false;
+}
+
 export function decodeCount(raw: unknown): number {
   return typeof raw === 'number' && Number.isSafeInteger(raw) && raw >= 0 ? raw : 0;
 }
@@ -326,6 +347,7 @@ interface NativeModules {
   readonly store: StoreSpec;
   readonly device: DeviceSpec;
   readonly keyStore: KeyStoreSpec;
+  readonly reminders: RemindersSpec;
 }
 
 function loadNativeModules(): NativeModules {
@@ -334,11 +356,13 @@ function loadNativeModules(): NativeModules {
   const store = require('./specs/NativeStore') as typeof import('./specs/NativeStore');
   const device = require('./specs/NativeDevice') as typeof import('./specs/NativeDevice');
   const keyStore = require('./specs/NativeKeyStore') as typeof import('./specs/NativeKeyStore');
+  const reminders = require('./specs/NativeReminders') as typeof import('./specs/NativeReminders');
   return {
     gateway: gateway.default,
     store: store.default,
     device: device.default,
     keyStore: keyStore.default,
+    reminders: reminders.default,
   };
 }
 
@@ -460,6 +484,19 @@ function liveKeyStore(native: KeyStoreSpec, log: LogFn): KeyStorePort {
   };
 }
 
+function liveReminders(native: RemindersSpec, log: LogFn): RemindersPort {
+  return {
+    reschedule: () => native.reschedule(),
+    scheduleRetry: () => native.scheduleRetry(),
+    getExactAlarmAccess: async () => decodeExactAlarmAccess(await native.getExactAlarmAccess(), log),
+    openExactAlarmSettings: () => native.openExactAlarmSettings(),
+    onRemindersDue: (listener) => {
+      const sub = native.onRemindersDue(() => listener());
+      return () => sub.remove();
+    },
+  };
+}
+
 const defaultLog: LogFn = (line) => console.warn(line);
 
 /** Builds the ports over the real TurboModules. Call once, from app code only. */
@@ -470,5 +507,6 @@ export function createLivePorts(log: LogFn = defaultLog): GatewayPorts {
     store: liveStore(native.store, log),
     device: liveDevice(native.device, log),
     keyStore: liveKeyStore(native.keyStore, log),
+    reminders: liveReminders(native.reminders, log),
   };
 }

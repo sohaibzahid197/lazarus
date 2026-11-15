@@ -6,6 +6,8 @@ export const COMMANDS = [
   'SCAM',
   'REMIND',
   'TRANSLATE',
+  'LIST',
+  'CANCEL',
   'QUESTION',
 ] as const;
 

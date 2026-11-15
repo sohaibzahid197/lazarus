@@ -1,7 +1,14 @@
 // Loop glue (task 22.8): start order, commit ordering, STOP handling, load and write
 // failures, and an unreadable Gemini_Api_Key.
 // Requirements 3.6, 3.9, 3.11, 3.12, 14.12, 16.20.
-import { FIXED_TEXTS, type CanonicalNumber } from '@lazarus/brain';
+import {
+  FIXED_TEXTS,
+  decodeStoredState,
+  encodeReminder,
+  type CanonicalNumber,
+  type Reminder,
+  type ReminderId,
+} from '@lazarus/brain';
 import { STOP_LIST_RETRIES } from '../src/gateway/commitQueue';
 import { startGatewayLoop, type Clock, type GatewayLoop } from '../src/gateway/loop';
 import { LOAD_RETRY_MS } from '../src/gateway/loopSupport';
@@ -18,6 +25,19 @@ const A = '+923001111111' as CanonicalNumber;
 const B = '+923002222222' as CanonicalNumber;
 const C = '+923003333333' as CanonicalNumber;
 const T0 = Date.UTC(2026, 0, 15, 5, 0, 0);
+
+function reminderOf(number: CanonicalNumber, id: string, dueAt: number): Reminder {
+  return {
+    id: id as ReminderId,
+    number,
+    slot: 1,
+    dueAt,
+    text: 'take medicine',
+    language: 'en',
+    createdAt: T0 - 1000,
+    handedAt: null,
+  };
+}
 
 interface Sleeper {
   readonly ms: number;
@@ -105,8 +125,15 @@ function expectNoBodies(logs: readonly string[], bodies: readonly string[]): voi
 }
 
 describe('start order', () => {
-  it('loads state, reads the key, applies Pending_Stop_Records, attaches, then takes', async () => {
+  it('loads state, reads the key, applies Pending_Stop_Records, reconciles, attaches, runs due reminders, then takes', async () => {
     const mock = createMockPorts();
+    // A stopped number that still has a stored reminder: reconcile removes it (8.8).
+    mock.scripts.loadState.resolve(
+      decodeStoredState(
+        JSON.stringify({ stopList: [A], reminders: [encodeReminder(reminderOf(A, 'r1', T0 + 60_000))] }),
+        '2026-01-15',
+      ),
+    );
     mock.addPendingStop(C, T0 - 1000);
     mock.pushInbound(inbound('m1', B, 'HELP', T0));
     start(mock);
@@ -115,19 +142,32 @@ describe('start order', () => {
     const order = mock.names([
       'loadState',
       'readKey',
+      'getExactAlarmAccess',
       'takePendingStops',
       'applyPendingStop',
+      'commit',
+      'onRemindersDue',
       'attachLoop',
+      'reschedule',
       'takeNextInbound',
     ]);
-    expect(order.slice(0, 6)).toEqual([
+    expect(order.slice(0, 10)).toEqual([
       'loadState',
       'readKey',
+      'getExactAlarmAccess',
       'takePendingStops',
       'applyPendingStop',
+      'commit', // reconcileReminders, before any alarm is armed
+      'onRemindersDue',
       'attachLoop',
+      'reschedule', // end of the first runDueReminders (11.6)
       'takeNextInbound',
     ]);
+    expect(mock.callsTo('applyPendingStop')[0]?.args[1]).toEqual([
+      { type: 'stop-add', number: C },
+      { type: 'reminder-remove-all', number: C },
+    ]);
+    expect(mock.callsTo('commit')[0]?.args[0]).toEqual([{ type: 'reminder-remove-all', number: A }]);
   });
 });
 
@@ -158,6 +198,15 @@ describe('per-message ordering', () => {
     expect(completeAt).toBeGreaterThan(commitAt);
     expect(cancelAt).toBeGreaterThan(completeAt);
     expect(nextTakeAt).toBeGreaterThan(cancelAt);
+    // STOP removes the sender's reminders in the same commit as the Stop_List change (8.1),
+    // and the alarm is re-armed before the next message (11.3).
+    expect(mock.calls[commitAt]?.args[0]).toEqual([
+      { type: 'stop-add', number: A },
+      { type: 'reminder-remove-all', number: A },
+    ]);
+    const rescheduleAt = mock.calls.findIndex((c, i) => i > cancelAt && c.method === 'reschedule');
+    expect(rescheduleAt).toBeGreaterThan(cancelAt);
+    expect(nextTakeAt).toBeGreaterThan(rescheduleAt);
     expect(mock.callsTo('cancelPendingSends')).toHaveLength(1);
     expect(mock.callsTo('sendParts').map((c) => c.args[1])).toEqual([B]);
   });
@@ -173,6 +222,9 @@ describe('Stop_List save failure (3.12)', () => {
     mock.pushInbound(inbound('m1', A, 'STOP', T0));
     await waitFor(() => ui.getSnapshot().banners.includes('stop-list-save-failed'), 'banner');
     expect(mock.calls.filter(commitsStop)).toHaveLength(STOP_LIST_RETRIES + 1);
+    for (const c of mock.calls.filter(commitsStop)) {
+      expect(c.args[0]).toContainEqual({ type: 'reminder-remove-all', number: A });
+    }
 
     mock.pushInbound(inbound('m2', A, 'HELP', T0 + 1), inbound('m3', B, 'HELP', T0 + 2));
     await waitFor(() => mock.callsTo('appendActivity').length === 3, 'three activity entries');

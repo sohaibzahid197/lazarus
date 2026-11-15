@@ -92,6 +92,7 @@ export {
 // `gateway.arbitraries.ts` is test-only and deliberately not exported.
 export type {
   ActivityEntry,
+  ActivityOutcome,
   CanonicalNumber,
   DayCounters,
   DeviceStatus,
@@ -110,7 +111,7 @@ export type {
   SleepReason,
   StateChange,
 } from './gateway.types.js';
-export { OUTCOMES, SLEEP_REASONS } from './gateway.types.js';
+export { ACTIVITY_OUTCOMES, OUTCOMES, SLEEP_REASONS } from './gateway.types.js';
 export {
   FALLBACK_COUNTRY_CODE,
   isCanonicalNumber,
@@ -182,3 +183,64 @@ export {
   stopKeywordCheck,
   trailingPunctuationRegex,
 } from './stopAliases.js';
+// Reminder_Module public API (_Requirements: 11.12_).
+// `reminder.arbitraries.ts` is test-only and deliberately not exported.
+export type {
+  DayPeriod,
+  DayWord,
+  DeliveryOutcome,
+  DeliveryStep,
+  DurationUnit,
+  ParseError,
+  ParseResult,
+  Reminder,
+  ReminderId,
+  ReminderSlot,
+  ReminderState,
+  ResolveResult,
+  TimeExpression,
+} from './reminder.types.js';
+export {
+  DELIVERY_OUTCOMES,
+  EMPTY_REMINDERS,
+  LATE_WINDOW_MS,
+  PK_OFFSET_MS,
+  REMINDER_HORIZON_MS,
+  REMINDER_LIMIT,
+  REMINDER_TEXT_MAX,
+} from './reminder.types.js';
+export type { PkWallClock } from './reminder.clock.js';
+export { DAY_MS, formatWhen, pkDayStart, pkWallClock } from './reminder.clock.js';
+export { parseReminder, toDigitValue } from './reminder.parse.js';
+export { isValidTimeExpression, printTimeExpression } from './reminder.print.js';
+export { resolveDueTime } from './reminder.resolve.js';
+export type { ReminderTexts } from './reminder.texts.js';
+export { REMINDER_TEXTS } from './reminder.texts.js';
+export { formatReminderList } from './reminder.list.js';
+export type { ReminderChange } from './reminder.store.js';
+export {
+  activeFor,
+  applyReminderChange,
+  dueReminders,
+  findBySlot,
+  lowestFreeSlot,
+  nextDueAt,
+  reconcileOnLoad,
+} from './reminder.store.js';
+export type { ReminderCommand, ReminderReply } from './reminder.pipeline.js';
+export {
+  cappedReminderChanges,
+  parseSlotArgument,
+  reminderReply,
+  reminderWriteFailed,
+} from './reminder.pipeline.js';
+export {
+  buildDeliveryEntry,
+  buildProcessingFailedEntry,
+  decideDelivery,
+  deliveryText,
+  finalizeDelivery,
+} from './reminder.delivery.js';
+export type { EncodedReminder } from './reminder.state.js';
+export { decodeReminders, encodeReminder } from './reminder.state.js';
+export { notAllowed, stopChanges } from './gateway.checks.js';

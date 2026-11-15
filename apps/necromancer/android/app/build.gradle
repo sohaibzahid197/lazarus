@@ -163,4 +163,6 @@ dependencies {
     implementation("androidx.security:security-crypto:1.1.0")
     // JVM unit tests for the pure Kotlin helpers.
     testImplementation("junit:junit:4.13.2")
+    // Real SQLite on the JVM for SqlConn, migration and table tests (sms-reminders Req 14.8).
+    testImplementation("org.xerial:sqlite-jdbc:3.54.1.0")
 }

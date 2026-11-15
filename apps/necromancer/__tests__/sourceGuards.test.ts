@@ -2,7 +2,8 @@
  * Source guards: static scans of the committed Necromancer sources.
  * Requirements 16.1 and 16.24 (no environment or build-config reads for the key or
  * model), 16.2 and 17.11 (no API key value in any file), 17.6 (no `any`),
- * 17.7 (no separately maintained STOP keyword list in Kotlin).
+ * 17.7 (no separately maintained STOP keyword list in Kotlin), sms-reminders 11.12
+ * (no time parsing or slot logic in `src`; reminder logic comes from `@lazarus/brain`).
  */
 // A module, so these names do not clash with other script-style test files.
 export {};
@@ -138,6 +139,112 @@ describe('Kotlin keeps no STOP keyword list (17.7)', () => {
   test('no Kotlin source holds a "band" or "بند" literal', () => {
     expect(offenders(kotlinFiles, f => /"band"/i.test(f.text) || f.text.includes('"بند"'))).toEqual(
       [],
+    );
+  });
+});
+
+// sms-reminders Requirement 11.12: the app only runs the brain's decisions.
+const REMINDERS_FILE = path.join('src', 'gateway', 'reminders.ts');
+const LOOP_REMINDERS_FILE = path.join('src', 'gateway', 'loopReminders.ts');
+/** Urdu day-period words the brain's parser owns, built from pieces like the patterns above. */
+const SLOT_WORDS = new RegExp('\\b(' + ['sub' + 'ah', 'sha' + 'am', 'ra' + 'at'].join('|') + ')\\b', 'i');
+/** `% 12` (or `%12`) hour math for 12-hour clocks. */
+const HOUR_MATH = new RegExp('%\\s*' + '12\\b');
+/**
+ * An `am` or `pm` token (also `a.m.`, `[ap]m`) inside a regex body. A letter before or
+ * after means another word (`name`, `ample`), except a regex escape such as `\b` or `\d`.
+ */
+const AM_PM = new RegExp(
+  '(?:(?<![a-z])|(?<=\\\\[bdsw]))(?:[ap]|\\[ap\\])(?:\\\\?\\.\\??)?m(?![a-z])',
+  'i',
+);
+/**
+ * Regex literals (after a token that can start an expression, so division is skipped)
+ * and string arguments of `new RegExp(...)`.
+ */
+const REGEX_LITERAL =
+  /(?:^|[=(,:[!&|?{};]|\breturn)\s*\/((?:\\.|\[(?:\\.|[^\]\\\n])*\]|[^/\\\n[])+)\/[dgimsuy]*/gm;
+const REGEX_CTOR = /\bRegExp\s*\(\s*(['"`])((?:\\.|(?!\1)[^\\])*)\1/g;
+function regexBodies(code: string): string[] {
+  const bodies: string[] = [];
+  for (const m of code.matchAll(REGEX_LITERAL)) bodies.push(m[1] ?? '');
+  for (const m of code.matchAll(REGEX_CTOR)) bodies.push(m[2] ?? '');
+  return bodies;
+}
+/** Reminder logic exported by `@lazarus/brain` that `src` must import, never re-implement. */
+const BRAIN_REMINDER_LOGIC = [
+  'parseReminder',
+  'resolveDueTime',
+  'printTimeExpression',
+  'isValidTimeExpression',
+  'pkWallClock',
+  'pkDayStart',
+  'formatWhen',
+  'nextDueAt',
+  'lowestFreeSlot',
+  'decideDelivery',
+  'dueReminders',
+  'finalizeDelivery',
+  'reconcileOnLoad',
+];
+const LOCAL_DECLARATION = new RegExp(
+  `\\b(?:function\\s*\\*?|const|let|var|class)\\s+(?:${BRAIN_REMINDER_LOGIC.join('|')})\\b`,
+);
+/** Named imports of one module specifier in `code`. */
+function namedImports(code: string, from: string): string[] {
+  const names: string[] = [];
+  const re = /import\s*(?:type\s*)?\{([^}]*)\}\s*from\s*'([^']+)'/g;
+  for (const m of code.matchAll(re)) {
+    if (m[2] !== from) continue;
+    for (const part of (m[1] ?? '').split(',')) {
+      const name = part.trim().replace(/^type\s+/, '').split(/\s+as\s+/)[0];
+      if (name) names.push(name);
+    }
+  }
+  return names;
+}
+describe('src holds no time parsing or slot logic (sms-reminders 11.12)', () => {
+  test('the reminder sources are scanned', () => {
+    const rels = srcFiles.map(f => f.rel);
+    expect(rels).toContain(REMINDERS_FILE);
+    expect(rels).toContain(LOOP_REMINDERS_FILE);
+  });
+  test('no subah, shaam or raat', () => {
+    expect(offenders(srcFiles, f => SLOT_WORDS.test(f.text))).toEqual([]);
+  });
+  test('no am or pm regex', () => {
+    const hasAmPm = (f: SourceFile): boolean =>
+      regexBodies(stripComments(f.text)).some(body => AM_PM.test(body));
+    expect(offenders(srcFiles, hasAmPm)).toEqual([]);
+  });
+  test('the am/pm scan finds regex literals and RegExp strings', () => {
+    expect(regexBodies('const r = /(\\d+)\\s*pm/i;').some(b => AM_PM.test(b))).toBe(true);
+    expect(regexBodies("x.match(/[ap]\\.?m/)").some(b => AM_PM.test(b))).toBe(true);
+    expect(regexBodies("new RegExp('\\\\bam\\\\b')").some(b => AM_PM.test(b))).toBe(true);
+    expect(regexBodies('const n = a / pm / b;')).toEqual([]);
+  });
+  test('no % 12 hour math', () => {
+    expect(offenders(srcFiles, f => HOUR_MATH.test(stripComments(f.text)))).toEqual([]);
+  });
+});
+describe('src imports reminder logic from @lazarus/brain (sms-reminders 11.12)', () => {
+  test('no src file declares its own copy of a brain reminder function', () => {
+    expect(offenders(srcFiles, f => LOCAL_DECLARATION.test(stripComments(f.text)))).toEqual([]);
+  });
+  test('no src file reaches into the brain package by path', () => {
+    const deepImport = /from\s*'[^']*(?:packages\/brain|@lazarus\/brain\/src)[^']*'/;
+    expect(offenders(srcFiles, f => deepImport.test(f.text))).toEqual([]);
+  });
+  test('the reminders runner takes its delivery decisions from @lazarus/brain', () => {
+    const code = srcFiles.find(f => f.rel === REMINDERS_FILE)?.text ?? '';
+    expect(namedImports(code, '@lazarus/brain')).toEqual(
+      expect.arrayContaining(['decideDelivery', 'dueReminders', 'finalizeDelivery', 'reconcileOnLoad']),
+    );
+  });
+  test('the loop reminders work item imports from @lazarus/brain', () => {
+    const code = srcFiles.find(f => f.rel === LOOP_REMINDERS_FILE)?.text ?? '';
+    expect(namedImports(code, '@lazarus/brain')).toEqual(
+      expect.arrayContaining(['reminderWriteFailed']),
     );
   });
 });

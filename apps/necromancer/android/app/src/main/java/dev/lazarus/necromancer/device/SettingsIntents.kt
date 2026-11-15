@@ -38,6 +38,17 @@ class SettingsIntents(private val contextProvider: () -> Context) {
   /** Mobile network settings (13.7). True when the operator screen opened. */
   fun openMobileNetworkSettings(): Boolean = open(SettingsTargets.mobileNetwork) == 0
 
+  /**
+   * Exact alarm access page (reminders 11.9). Below API 31 the page does not exist, so App
+   * info opens. True when the exact alarm page itself opened.
+   */
+  fun openExactAlarmSettings(): Boolean =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      open(SettingsTargets.exactAlarm) == 0
+    } else {
+      open(SettingsTargets.appInfo)
+      false
+    }
   /** Index of the target that opened, or null when none did. */
   private fun open(chain: List<SettingsTarget>): Int? {
     val context = contextProvider()

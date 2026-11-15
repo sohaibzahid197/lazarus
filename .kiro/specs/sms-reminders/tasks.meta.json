@@ -1,0 +1,1898 @@
+{
+  "pbtResults": {
+    "1.3 Write property test for strict LIST and CANCEL routing": {
+      "status": "passed",
+      "lastRunTimestamp": 1794733837067
+    },
+    "1.5 Write property test for router totality and STOP precedence": {
+      "status": "passed",
+      "lastRunTimestamp": 1794733962003
+    },
+    "1.4 Write property test for the LIST/CANCEL print and route round trip": {
+      "status": "passed",
+      "lastRunTimestamp": 1794733962665
+    },
+    "4.5 Write property test for 12-hour clocks": {
+      "status": "passed",
+      "lastRunTimestamp": 1794734072219
+    },
+    "4.4 Write property test for Day_Period bare hours": {
+      "status": "passed",
+      "lastRunTimestamp": 1794734084199
+    },
+    "4.3 Write property test that parse is deterministic": {
+      "status": "passed",
+      "lastRunTimestamp": 1794734173304
+    },
+    "4.2 Write property test that parse never throws": {
+      "status": "passed",
+      "lastRunTimestamp": 1794734222377
+    },
+    "6.3 Write property test that the resolver never throws and is deterministic": {
+      "status": "passed",
+      "lastRunTimestamp": 1794734444386
+    },
+    "6.2 Write property test that Due_Time is in the future and within 30 days": {
+      "status": "passed",
+      "lastRunTimestamp": 1794734444677
+    },
+    "5.4 Write property test for printer length, totality and format": {
+      "status": "passed",
+      "lastRunTimestamp": 1794734452815
+    },
+    "5.2 Write property test for the Time_Printer round trip": {
+      "status": "passed",
+      "lastRunTimestamp": 1794734465045
+    },
+    "5.3 Write property test for surface form independence": {
+      "status": "passed",
+      "lastRunTimestamp": 1794734482031
+    },
+    "6.6 Write property test for relative durations": {
+      "status": "passed",
+      "lastRunTimestamp": 1794734565805
+    },
+    "6.4 Write property test that printed and original expressions resolve the same": {
+      "status": "passed",
+      "lastRunTimestamp": 1794734569822
+    },
+    "6.5 Write property test for the wall-clock day and minute": {
+      "status": "passed",
+      "lastRunTimestamp": 1794734601633
+    },
+    "8.5 Write property test that the Reminder_Delivery_Text fits 1 to 3 parts": {
+      "status": "passed",
+      "lastRunTimestamp": 1794735619779
+    },
+    "8.4 Write property test that Time_Help examples always resolve": {
+      "status": "passed",
+      "lastRunTimestamp": 1794735049192
+    },
+    "9.2 Write property test that LIST replies fit 3 parts and show every reminder": {
+      "status": "passed",
+      "lastRunTimestamp": 1794736379176
+    },
+    "10.4 Write property test that STOP removes all reminders for that number": {
+      "status": "passed",
+      "lastRunTimestamp": 1794736913809
+    },
+    "10.5 Write property test for the Reminder_Limit and distinct slots over any sequence": {
+      "status": "passed",
+      "lastRunTimestamp": 1794736928005
+    },
+    "10.7 Write property test that the Reminder_Limit is checked first": {
+      "status": "passed",
+      "lastRunTimestamp": 1794737141044
+    },
+    "10.6 Write property test for a successful REMIND": {
+      "status": "passed",
+      "lastRunTimestamp": 1794737231173
+    },
+    "10.10 Write property test for CANCEL": {
+      "status": "passed",
+      "lastRunTimestamp": 1794737361388
+    },
+    "10.9 Write property test that LIST shows only the sender's reminders": {
+      "status": "passed",
+      "lastRunTimestamp": 1794737396908
+    },
+    "10.8 Write property test that reminder commands are local and respect early exits": {
+      "status": "passed",
+      "lastRunTimestamp": 1794737421124
+    },
+    "10.11 Write property test for slot arguments": {
+      "status": "passed",
+      "lastRunTimestamp": 1794737792169
+    },
+    "11.4 Write property test for exactly one Delivery_Outcome": {
+      "status": "passed",
+      "lastRunTimestamp": 1794737961558
+    },
+    "11.3 Write property test for the delivery check-order model": {
+      "status": "passed",
+      "lastRunTimestamp": 1794737988823
+    },
+    "11.6 Write property test for delivery finalization accounting": {
+      "status": "passed",
+      "lastRunTimestamp": 1794738142278
+    },
+    "11.7 Write property test that a run of due reminders never exceeds the cap": {
+      "status": "passed",
+      "lastRunTimestamp": 1794738154197
+    },
+    "11.5 Write property test that STOP always wins for reminders": {
+      "status": "passed",
+      "lastRunTimestamp": 1794738206841
+    },
+    "11.8 Write property test for delivery Activity_Entry privacy": {
+      "status": "passed",
+      "lastRunTimestamp": 1794738321108
+    },
+    "11.9 Write property test for load reconciliation": {
+      "status": "passed",
+      "lastRunTimestamp": 1794738468354
+    },
+    "12.2 Write property test for the reminder wire format round trip": {
+      "status": "passed",
+      "lastRunTimestamp": 1794738472522
+    },
+    "12.3 Write property test for malformed stored reminders": {
+      "status": "passed",
+      "lastRunTimestamp": 1794738533056
+    }
+  },
+  "executionHistory": {
+    "1.1 Add LIST and CANCEL to the Command_Router": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733339908
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733354092
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733471295
+      }
+    ],
+    "1.2 Update existing router tests and arbitraries for the 9 Commands": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733339941
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733482289
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733709294
+      }
+    ],
+    "1.3 Write property test for strict LIST and CANCEL routing": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733339979
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733726388
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733875445
+      }
+    ],
+    "1.4 Write property test for the LIST/CANCEL print and route round trip": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340006
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733887205
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733990178
+      }
+    ],
+    "1.5 Write property test for router totality and STOP precedence": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340041
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733888376
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733991345
+      }
+    ],
+    "1.6 Write unit tests for LIST and CANCEL routing examples": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340066
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733889596
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733992554
+      }
+    ],
+    "2.1 Create `reminder.types.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340095
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733355339
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733472291
+      }
+    ],
+    "2.2 Extend `GatewayState` and `StateChange`, and add the store fold": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340123
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733482327
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733710039
+      }
+    ],
+    "2.3 Create `reminder.arbitraries.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340155
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733483165
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733711457
+      }
+    ],
+    "2.4 Update existing fixtures for the new `reminders` field": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340182
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733723756
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733871875
+      }
+    ],
+    "2.5 Write unit tests for the Reminder_Store_Model": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340210
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733727670
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733876671
+      }
+    ],
+    "3.1 Create `reminder.clock.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340240
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733356299
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733473231
+      }
+    ],
+    "3.2 Write unit tests for the clock": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340272
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733484393
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733712872
+      }
+    ],
+    "4.1 Create `reminder.parse.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340299
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733485190
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733714197
+      }
+    ],
+    "4.2 Write property test that parse never throws": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340328
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734000909
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734242933
+      }
+    ],
+    "4.3 Write property test that parse is deterministic": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340354
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734001877
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734243900
+      }
+    ],
+    "4.4 Write property test for Day_Period bare hours": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340382
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734003315
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734245093
+      }
+    ],
+    "4.5 Write property test for 12-hour clocks": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340408
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734004287
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734246126
+      }
+    ],
+    "4.6 Write unit tests for parser examples and boundaries": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340440
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733890874
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733993735
+      }
+    ],
+    "5.1 Create `reminder.print.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340465
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733723959
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733873064
+      }
+    ],
+    "5.2 Write property test for the Time_Printer round trip": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340492
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734371495
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734503662
+      }
+    ],
+    "5.3 Write property test for surface form independence": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340521
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734372528
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734504678
+      }
+    ],
+    "5.4 Write property test for printer length, totality and format": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340546
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734373836
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734505955
+      }
+    ],
+    "5.5 Write unit tests for the printer": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340572
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734005174
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734246812
+      }
+    ],
+    "6.1 Create `reminder.resolve.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340606
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733725172
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733874227
+      }
+    ],
+    "6.2 Write property test that Due_Time is in the future and within 30 days": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340631
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734374702
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734507083
+      }
+    ],
+    "6.3 Write property test that the resolver never throws and is deterministic": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340663
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734375731
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734507994
+      }
+    ],
+    "6.4 Write property test that printed and original expressions resolve the same": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340688
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734515978
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734729108
+      }
+    ],
+    "6.5 Write property test for the wall-clock day and minute": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340711
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734516250
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734729351
+      }
+    ],
+    "6.6 Write property test for relative durations": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340740
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734517292
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734730013
+      }
+    ],
+    "6.7 Write example tests for routing, parsing and resolving together": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340775
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734259978
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734363418
+      }
+    ],
+    "6.8 Write the process time zone test": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340805
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734260034
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734364211
+      }
+    ],
+    "7. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340844
+      },
+      {
+        "executionId": "875ea332-e2ff-4025-9410-f4853c250302",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794735849754
+      },
+      {
+        "executionId": "875ea332-e2ff-4025-9410-f4853c250302",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794735915219
+      }
+    ],
+    "8.1 Create `reminder.texts.ts` and add `formatWhen` to `reminder.clock.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340895
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734518220
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734730925
+      }
+    ],
+    "8.2 Update the Help_Text in `gateway.texts.ts` and its tests": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340921
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734743392
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794735068894
+      }
+    ],
+    "8.3 Write exhaustive unit tests for the Reminder_Texts": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340945
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734743646
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794735069244
+      }
+    ],
+    "8.4 Write property test that Time_Help examples always resolve": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733340972
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734744841
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794735070004
+      }
+    ],
+    "8.5 Write property test that the Reminder_Delivery_Text fits 1 to 3 parts": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341004
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734746035
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794735073294
+      },
+      {
+        "executionId": "875ea332-e2ff-4025-9410-f4853c250302",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794735402831
+      },
+      {
+        "executionId": "875ea332-e2ff-4025-9410-f4853c250302",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794735831276
+      }
+    ],
+    "9.1 Create `reminder.list.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341031
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734746977
+      },
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794735071155
+      }
+    ],
+    "9.2 Write property test that LIST replies fit 3 parts and show every reminder": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341055
+      },
+      {
+        "executionId": "875ea332-e2ff-4025-9410-f4853c250302",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794735916159
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794736481659
+      }
+    ],
+    "9.3 Write unit tests for the List_Formatter": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341090
+      },
+      {
+        "executionId": "875ea332-e2ff-4025-9410-f4853c250302",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794735917368
+      },
+      {
+        "executionId": "875ea332-e2ff-4025-9410-f4853c250302",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794736091195
+      }
+    ],
+    "10.1 Create `reminder.pipeline.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341126
+      },
+      {
+        "executionId": "875ea332-e2ff-4025-9410-f4853c250302",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794735918198
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794736286975
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794736287381
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794736482490
+      }
+    ],
+    "10.2 Wire reminders and STOP removal into `gateway.pipeline.ts` and `gateway.pending.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341154
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794736488454
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794736758918
+      }
+    ],
+    "10.3 Update existing pipeline tests for the new STOP change list and REMIND replies": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341179
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794736766148
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737040972
+      }
+    ],
+    "10.4 Write property test that STOP removes all reminders for that number": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341206
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794736766897
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737041219
+      }
+    ],
+    "10.5 Write property test for the Reminder_Limit and distinct slots over any sequence": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341230
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794736768096
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737042872
+      }
+    ],
+    "10.6 Write property test for a successful REMIND": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341273
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794736769299
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737259013
+      }
+    ],
+    "10.7 Write property test that the Reminder_Limit is checked first": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341303
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794736770349
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737260319
+      }
+    ],
+    "10.8 Write property test that reminder commands are local and respect early exits": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341339
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737270230
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737449274
+      }
+    ],
+    "10.9 Write property test that LIST shows only the sender's reminders": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341363
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737271249
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737450508
+      }
+    ],
+    "10.10 Write property test for CANCEL": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341404
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737272492
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737451497
+      }
+    ],
+    "10.11 Write property test for slot arguments": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341429
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737457044
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737828576
+      }
+    ],
+    "10.12 Write unit tests for pipeline boundaries": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341456
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737458197
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737705921
+      }
+    ],
+    "11.1 Create `reminder.delivery.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341489
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737053448
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737261380
+      }
+    ],
+    "11.2 Add `reconcileOnLoad` to `reminder.store.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341522
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737835795
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738021263
+      }
+    ],
+    "11.3 Write property test for the delivery check-order model": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341547
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737836296
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738022446
+      }
+    ],
+    "11.4 Write property test for exactly one Delivery_Outcome": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341579
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737837046
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738025542
+      }
+    ],
+    "11.5 Write property test that STOP always wins for reminders": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341612
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738031282
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738232182
+      }
+    ],
+    "11.6 Write property test for delivery finalization accounting": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341639
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738032483
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738233254
+      }
+    ],
+    "11.7 Write property test that a run of due reminders never exceeds the cap": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341670
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738033460
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738234548
+      }
+    ],
+    "11.8 Write property test for delivery Activity_Entry privacy": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341703
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738240923
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738382094
+      }
+    ],
+    "11.9 Write property test for load reconciliation": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341729
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738390137
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738558093
+      }
+    ],
+    "11.10 Write unit tests for delivery boundaries": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341756
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738243167
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738383273
+      }
+    ],
+    "12.1 Create `reminder.state.ts` and wire it into `gateway.state.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341793
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738243490
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738384588
+      }
+    ],
+    "12.2 Write property test for the reminder wire format round trip": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341830
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738391313
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738556756
+      }
+    ],
+    "12.3 Write property test for malformed stored reminders": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341861
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738392724
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738556933
+      }
+    ],
+    "12.4 Update `gateway.state.unit.test.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341889
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738563614
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794739269900
+      }
+    ],
+    "13.1 Update `packages/brain/src/index.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341916
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738564635
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794739270935
+      }
+    ],
+    "13.2 Write an export test for the Reminder_Module": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341949
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794739278101
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794740851244
+      }
+    ],
+    "14. Checkpoint - Ensure all brain tests pass": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733341981
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794740862602
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741071670
+      }
+    ],
+    "15.1 Add the `SqlConn` abstraction and the JVM SQLite test dependency": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342027
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794739279128
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794740852586
+      }
+    ],
+    "15.2 Add the `reminder` table DDL and `ReminderMigration`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342081
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794740863370
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741071976
+      }
+    ],
+    "15.3 Wire reminders into `LazarusDb`, `StoreSql` and `StoreWire`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342122
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741081829
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741319949
+      }
+    ],
+    "15.4 Write Kotlin JVM tests for the migration and the table": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342154
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741328166
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741606079
+      }
+    ],
+    "15.5 Write `StoreWireTest` additions": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342182
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741329580
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741607186
+      }
+    ],
+    "16.1 Create `reminder/ReminderAlarmPolicy.kt`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342212
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794739280069
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794740853834
+      }
+    ],
+    "16.2 Create `reminder/ReminderScheduler.kt`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342244
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794740864134
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741072948
+      }
+    ],
+    "16.3 Create the reminder receivers and update `BootReceiver`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342272
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741330748
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741608640
+      }
+    ],
+    "16.4 Create `ReminderModule` and the `NativeReminders` spec": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342299
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741623910
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741865276
+      }
+    ],
+    "16.5 Update `AndroidManifest.xml`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342331
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741082026
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741321097
+      }
+    ],
+    "16.6 Write Kotlin JVM tests for the alarm policy and scheduler": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342364
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741083131
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741322029
+      }
+    ],
+    "16.7 Update `__tests__/manifest.test.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342397
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741625024
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741866381
+      }
+    ],
+    "17. Checkpoint - Ensure the build and tests pass": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342428
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741875211
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741999827
+      }
+    ],
+    "18.1 Add the `RemindersPort` to `src/native/ports.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342456
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794742001180
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794742116119
+      }
+    ],
+    "18.2 Update `__tests__/support/mockPorts.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342487
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794742122094
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794742316173
+      }
+    ],
+    "18.3 Add reminder status to `store.ts` and `loopSupport.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342514
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794742123030
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794742317468
+      }
+    ],
+    "18.4 Create `src/gateway/reminders.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342546
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794742324057
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794742539743
+      }
+    ],
+    "18.5 Add the reminders work item to `src/gateway/loop.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342577
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794742554628
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794743048285
+      }
+    ],
+    "18.6 Update `src/ui/screens/MainScreen.tsx`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342612
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794742556441
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794743049765
+      }
+    ],
+    "18.7 Update existing app tests for reminders and the new STOP change list": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342645
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794743056840
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794743576181
+      }
+    ],
+    "18.8 Write Jest tests for the reminders runner": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342677
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794743057862
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794743577609
+      }
+    ],
+    "18.9 Write Jest tests for reminders in the gateway loop": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342713
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794743059260
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794743578813
+      }
+    ],
+    "18.10 Write the reminder privacy test": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342744
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794743588476
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794743818178
+      }
+    ],
+    "18.11 Extend `__tests__/screens.test.tsx` for the reminder UI": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342778
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794743591002
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794743819031
+      }
+    ],
+    "18.12 Extend `__tests__/sourceGuards.test.ts`": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342812
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794743589645
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794743820316
+      }
+    ],
+    "19. Final checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733342869
+      },
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794743833414
+      }
+    ],
+    "3. Implement the Pakistan_Time clock": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733712906
+      }
+    ],
+    "2. Add reminder types, the Reminder_Store_Model fold and shared arbitraries": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733876711
+      }
+    ],
+    "1. Route LIST and CANCEL": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794733992586
+      }
+    ],
+    "4. Implement the Time_Parser": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734246153
+      }
+    ],
+    "5. Implement the Time_Printer": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734505984
+      }
+    ],
+    "6. Implement the Due_Time_Resolver": [
+      {
+        "executionId": "c2363c3b-bcaf-49e8-b457-50ae05f1d195",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794734730050
+      }
+    ],
+    "8. Implement the Reminder_Texts and the Help_Text update": [
+      {
+        "executionId": "875ea332-e2ff-4025-9410-f4853c250302",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794735831328
+      }
+    ],
+    "9. Implement the List_Formatter": [
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794736481707
+      }
+    ],
+    "10. Integrate REMIND, LIST, CANCEL and STOP removal into the Gateway_Pipeline": [
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794737828636
+      }
+    ],
+    "11. Implement the Delivery_Decision and load reconciliation": [
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794738558130
+      }
+    ],
+    "12. Implement the reminder state wire format": [
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794739269959
+      }
+    ],
+    "13. Wire the brain exports": [
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794740851328
+      }
+    ],
+    "15. Implement Kotlin schema version 2 and reminder storage": [
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741607223
+      }
+    ],
+    "16. Implement the Kotlin ReminderScheduler, receivers and manifest": [
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794741866426
+      }
+    ],
+    "18. Implement the JS glue and Main_Screen": [
+      {
+        "executionId": "3488f3ad-4b06-4691-aec1-8ef3ec20c7a0",
+        "chatSessionId": "sess_99730c48-c4df-426f-8f98-10a8e6c09479",
+        "timestamp": 1794743820372
+      }
+    ]
+  }
+}

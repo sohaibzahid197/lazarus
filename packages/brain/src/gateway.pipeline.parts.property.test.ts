@@ -24,12 +24,14 @@ import { MAX_PARTS, getPartLimits } from './limits.js';
 import { plainLatinWordArb, urduCharArb } from './router.arbitraries.js';
 import { splitSms } from './sms.js';
 import { countCodeUnits } from './units.js';
+import { EMPTY_REMINDERS } from './reminder.types.js';
 
 const DAY = '2024-01-01';
 const MAX_AI_CHARS = 2000;
 
 /** A clean state with a large cap and rate limit, so nothing blocks the reply. */
 const cleanState = (cc: string): GatewayState => ({
+  reminders: EMPTY_REMINDERS,
   stopList: new Set(),
   allowlist: new Set(),
   rate: new Map(),

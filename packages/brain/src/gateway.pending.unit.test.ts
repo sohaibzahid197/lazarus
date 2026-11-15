@@ -7,6 +7,7 @@ import type { PendingStopRecord } from './gateway.pending.js';
 import { applyChanges } from './gateway.pipeline.js';
 import { DEFAULT_SETTINGS } from './gateway.settings.js';
 import type { CanonicalNumber, GatewayState } from './gateway.types.js';
+import { EMPTY_REMINDERS } from './reminder.types.js';
 
 const OWN = '+923001234567' as CanonicalNumber;
 const ALREADY_STOPPED = '+923339998877' as CanonicalNumber;
@@ -14,6 +15,7 @@ const RECEIVED_AT = 1767225600000;
 
 // Allowlist_Mode is on with an empty Allowlist: a Pending_Stop_Record must ignore it (Requirement 3.2).
 const makeState = (): GatewayState => ({
+  reminders: EMPTY_REMINDERS,
   stopList: new Set([ALREADY_STOPPED]),
   allowlist: new Set(),
   rate: new Map(),
@@ -36,7 +38,10 @@ describe('applyPendingStop', () => {
 
     expect(decision.outcome).toBe('stopped');
     expect(decision.parts).toHaveLength(0);
-    expect(decision.changes).toEqual([{ type: 'stop-add', number: '+923111234567' }]);
+    expect(decision.changes).toEqual([
+            { type: 'stop-add', number: '+923111234567' },
+            { type: 'reminder-remove-all', number: '+923111234567' },
+          ]);
 
     const next = applyChanges(state, decision.changes);
     expect([...next.stopList].sort()).toEqual([ALREADY_STOPPED, '+923111234567'].sort());

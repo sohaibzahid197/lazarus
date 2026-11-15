@@ -1,4 +1,5 @@
-// Property test for the Gateway_Pipeline: bodies never reach stored data (task 9.8).
+// Property test for the Gateway_Pipeline: bodies never reach stored data (task 9.8;
+// sms-reminders task 10.3 allows the Reminder_Text inside reminder-add only).
 import * as fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { createMockClient } from './ai.mock.js';
@@ -17,14 +18,16 @@ import {
 } from './gateway.arbitraries.js';
 import { applyChanges, finalizeSend, runGatewayPipeline, type PipelineDeps } from './gateway.pipeline.js';
 import { serializeChanges } from './gateway.state.js';
+import { REMINDER_TEXTS } from './reminder.texts.js';
 import { GATEWAY_TEXTS } from './gateway.texts.js';
-import type { InboundMessage, PipelineContext } from './gateway.types.js';
+import type { InboundMessage, PipelineContext, StateChange } from './gateway.types.js';
 
 const AI_REPLY = 'A short answer.';
 
 /** Fixed text the pipeline may send or store; the marker must not occur in it. */
 const FIXED_HAYSTACK = (
   JSON.stringify(GATEWAY_TEXTS) +
+  JSON.stringify(REMINDER_TEXTS) +
   [...ALIAS_TABLE.keys()].join(' ') +
   AI_REPLY
 ).toLowerCase();
@@ -39,26 +42,46 @@ const markerToken: fc.Arbitrary<string> = fc.string({
   maxLength: 20,
 });
 
-/** A body carrying the marker at the start, the end, or both. */
+/**
+ * A body carrying the marker at the start, the end, or both, or a REMIND whose
+ * Reminder_Text holds the marker (sms-reminders 14.6: the only allowed place).
+ */
 const markedBody = (marker: string): fc.Arbitrary<string> =>
   fc
-    .tuple(anyBody, fc.constantFrom('end', 'start', 'both'))
+    .tuple(anyBody, fc.constantFrom('end', 'start', 'both', 'remind'))
     .map(([text, where]) =>
       where === 'end'
         ? `${text} ${marker}`
         : where === 'start'
           ? `${marker} ${text}`
-          : `${marker} ${text} ${marker}`,
+          : where === 'both'
+            ? `${marker} ${text} ${marker}`
+            : `REMIND at 8pm ${marker}`,
     );
+
+type ReminderAdd = Extract<StateChange, { readonly type: 'reminder-add' }>;
+const isReminderAdd = (c: StateChange): c is ReminderAdd => c.type === 'reminder-add';
+
+/** A reminder-add with its Reminder_Text blanked: every other field must hold no body text. */
+const withoutReminderText = (c: ReminderAdd): string =>
+  JSON.stringify({ ...c, reminder: { ...c.reminder, text: '' } });
+
+/** Decision fields other than `parts`, as JSON, with any Reminder_Text blanked. */
+const withoutParts = (decision: {
+  readonly parts: readonly string[];
+  readonly changes: readonly StateChange[];
+}): string => {
+  const { parts: _parts, changes, ...rest } = decision;
+  const blanked = changes.map((c) =>
+    isReminderAdd(c) ? { ...c, reminder: { ...c.reminder, text: '' } } : c,
+  );
+  return JSON.stringify({ ...rest, changes: blanked });
+};
 
 /** A sender address with its Canonical_Number, so the state can hold it. */
 const senderArb = countryCode.chain((cc) => formattedNumber(cc));
 
-/** Decision fields other than `parts`, as JSON. */
-const withoutParts = (decision: { readonly parts: readonly string[] }): string => {
-  const { parts: _parts, ...rest } = decision;
-  return JSON.stringify(rest);
-};
+
 
 describe('Gateway_Pipeline keeps bodies out of stored data', () => {
   // Feature: necromancer-sms-gateway, Property 29: Bodies never reach stored data
@@ -95,9 +118,14 @@ describe('Gateway_Pipeline keeps bodies out of stored data', () => {
           );
           const entry = buildActivityEntry(decision, final.outcome);
 
+          // The Reminder_Text may hold body text, but only inside the reminder-add of a REMIND.
+          const adds = [...decision.changes, ...final.changes].filter(isReminderAdd);
+          if (adds.length > 0) expect(decision.command).toBe('REMIND');
+          expect(adds.length).toBeLessThanOrEqual(1);
           const stored = [
-            serializeChanges(decision.changes),
-            serializeChanges(final.changes),
+            serializeChanges(decision.changes.filter((c) => !isReminderAdd(c))),
+            serializeChanges(final.changes.filter((c) => !isReminderAdd(c))),
+            ...adds.map(withoutReminderText),
             JSON.stringify(entry),
             withoutParts(decision),
             JSON.stringify(decision.parts),

@@ -65,7 +65,10 @@ describe('gateway.pending applyPendingStop', () => {
           expect(entry.who).toBe(maskNumber(identity.number));
         } else {
           expect(decision.outcome).toBe('stopped');
-          expect(decision.changes).toEqual([{ type: 'stop-add', number: identity.number }]);
+          expect(decision.changes).toEqual([
+            { type: 'stop-add', number: identity.number },
+            { type: 'reminder-remove-all', number: identity.number },
+          ]);
           expect(entry.who).toBe(maskNumber(identity.number));
           expect([...next.stopList].filter((n) => n === identity.number)).toHaveLength(1);
         }

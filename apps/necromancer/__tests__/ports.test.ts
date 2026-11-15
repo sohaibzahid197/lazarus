@@ -1,10 +1,12 @@
 // Unit tests for the native payload decoders (task 16.4, Requirement 14.6).
 // Only the decoders are imported; createLivePorts is never called, so no
 // TurboModule is loaded.
+import { ACTIVITY_OUTCOMES, DELIVERY_OUTCOMES } from '@lazarus/brain';
 import {
   decodeActivity,
   decodeCount,
   decodeDeviceStatus,
+  decodeExactAlarmAccess,
   decodeInbound,
   decodeKeyRead,
   decodePendingStops,
@@ -265,6 +267,28 @@ describe('decodeActivity', () => {
     expect(lines).toEqual(['ports: dropped 4 malformed activity entries']);
   });
 
+  it('passes reminder Delivery_Outcomes and reminders-failed (sms-reminders 13.1)', () => {
+    const sent = { ...entry, command: 'REMIND', outcome: 'reminder-sent' };
+    const failed = { receivedAt: 1700000000000, who: '', command: 'NONE', outcome: 'reminders-failed' };
+    expect(decodeActivity(JSON.stringify([sent, failed]), log)).toEqual([sent, failed]);
+    expect(lines).toEqual([]);
+  });
+
+  it.each(DELIVERY_OUTCOMES)('passes Delivery_Outcome %s with command REMIND', (outcome) => {
+    const row = { ...entry, command: 'REMIND', outcome };
+    expect(decodeActivity(JSON.stringify([row]), log)).toEqual([row]);
+    expect(lines).toEqual([]);
+  });
+
+  it('passes every Activity_Outcome and still drops an unknown reminder outcome', () => {
+    const rows = ACTIVITY_OUTCOMES.map((outcome) => ({ ...entry, outcome }));
+    expect(decodeActivity(JSON.stringify(rows), log)).toEqual(rows);
+    expect(lines).toEqual([]);
+    const unknown = { ...entry, command: 'REMIND', outcome: 'reminder-lost' };
+    expect(decodeActivity(JSON.stringify([unknown]), log)).toEqual([]);
+    expect(lines).toEqual(['ports: dropped 1 malformed activity entries']);
+  });
+
   it.each(['{}', 'oops', 3, undefined])('returns [] for non-array %p', (raw) => {
     expect(decodeActivity(raw, log)).toEqual([]);
     expect(lines).toHaveLength(1);
@@ -279,5 +303,17 @@ describe('decodeCount', () => {
 
   it.each([-1, 1.5, '3', null, Number.NaN, {}])('returns 0 for %p', (raw) => {
     expect(decodeCount(raw)).toBe(0);
+  });
+});
+
+describe('decodeExactAlarmAccess', () => {
+  it.each([true, false])('passes boolean %p', (raw) => {
+    expect(decodeExactAlarmAccess(raw, log)).toBe(raw);
+    expect(lines).toEqual([]);
+  });
+
+  it.each(['true', 1, null, undefined, {}])('treats %p as denied with one line', (raw) => {
+    expect(decodeExactAlarmAccess(raw, log)).toBe(false);
+    expect(lines).toEqual(['ports: exact alarm access unreadable, treated as denied']);
   });
 });

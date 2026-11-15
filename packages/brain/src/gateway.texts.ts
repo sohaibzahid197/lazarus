@@ -4,8 +4,10 @@
  * Rules (checked by tests): no text has a newline, `en` and `roman-ur` texts
  * are GSM-7, `ur` texts are Urdu script, every text fits 1 SMS part (the `ur`
  * Help_Text at most 2), and each text uses the keywords ALIAS_TABLE knows in
- * its Language. Each usage hint starts with its own keyword, so the hint and
- * its example both route to that Command.
+ * its Language. A LIST or CANCEL keyword (`list`, `fehrist`, `فہرست`, ...)
+ * appears only as that keyword. The Help_Text names REMIND as available and
+ * keeps TRANSLATE "coming soon". Each usage hint starts with its own keyword,
+ * so the hint and its example both route to that Command.
  */
 import type { Language } from './router.types.js';
 
@@ -19,8 +21,8 @@ export interface GatewayTexts {
 
 const EN_TEXTS: GatewayTexts = {
   help:
-    'Lazarus: text any question. SCAM <msg> checks a message. STOP ends texts, START resumes. ' +
-    'REMIND and TRANSLATE coming soon. HELP shows this list.',
+    'Lazarus: text any question. SCAM <msg> checks a msg. REMIND 8pm <text> sets a reminder, ' +
+    'LIST shows them. STOP ends texts, START resumes. TRANSLATE coming soon.',
   slowDown: 'You sent many messages. Please wait a little and try again later.',
   welcomeBack: 'Welcome back! You will get replies again. Text any question, or HELP for commands.',
   notAvailable: 'Sorry, this is not ready yet. Text any question, or HELP for commands.',
@@ -33,8 +35,8 @@ const EN_TEXTS: GatewayTexts = {
 
 const ROMAN_UR_TEXTS: GatewayTexts = {
   help:
-    'Lazarus: koi bhi sawal bhejein. DHOKA <paigham> se paigham check karein. BAND se texts band, ' +
-    'SHURU se dobara. YAAD aur TARJUMA jald. MADAD se yeh list.',
+    'Lazarus: koi bhi sawal bhejein. DHOKA <paigham> se check. YAAD 8pm <baat> se yaad dahani, ' +
+    'FEHRIST se dekhein. BAND se band, SHURU se dobara. TARJUMA jald.',
   slowDown: 'Aap ne bohat paigham bheje hain. Thori dair baad dobara koshish karein.',
   welcomeBack: 'Khush aamdeed! Ab aap ko dobara jawab milenge. Koi bhi sawal bhejein, ya MADAD likhein.',
   notAvailable: 'Maaf kijiye, yeh abhi tayyar nahi. Koi bhi sawal bhejein, ya MADAD likhein.',
@@ -47,8 +49,8 @@ const ROMAN_UR_TEXTS: GatewayTexts = {
 
 const UR_TEXTS: GatewayTexts = {
   help:
-    'لزارس: کوئی سوال بھیجیں۔ دھوکہ اور پیغام سے جانچ۔ بند سے بند، ' +
-    'شروع سے دوبارہ۔ یاد اور ترجمہ جلد۔ مدد سے فہرست۔',
+    'سوال بھیجیں۔ دھوکہ اور پیغام سے جانچ۔ یاد، وقت، بات سے یاد دہانی، فہرست سے دیکھیں۔ ' +
+    'بند سے بند، شروع سے پھر۔ ترجمہ جلد۔',
   slowDown: 'آپ نے بہت پیغام بھیجے ہیں۔ کچھ دیر بعد دوبارہ کوشش کریں۔',
   welcomeBack: 'خوش آمدید! اب آپ کو دوبارہ جواب ملیں گے۔ مدد لکھ کر فہرست دیکھیں۔',
   notAvailable: 'معاف کیجیے، یہ ابھی تیار نہیں۔ کوئی سوال بھیجیں یا مدد لکھیں۔',

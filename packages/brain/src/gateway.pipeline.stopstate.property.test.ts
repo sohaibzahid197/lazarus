@@ -60,7 +60,10 @@ describe('gateway.pipeline STOP in every state', () => {
           const { decision } = step;
           expect(decision.outcome).toBe('stopped');
           expect(decision.parts).toEqual([]);
-          expect(decision.changes).toEqual([{ type: 'stop-add', number }]);
+          expect(decision.changes).toEqual([
+            { type: 'stop-add', number },
+            { type: 'reminder-remove-all', number },
+          ]);
 
           const next = applyChanges(state, decision.changes);
           expect([...next.stopList].filter((n) => n === number)).toHaveLength(1);

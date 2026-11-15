@@ -85,6 +85,7 @@ describe('routeCommand totality properties', () => {
 describe('routeCommand determinism properties', () => {
   const aliasArb: fc.Arbitrary<string> = fc.constantFrom(
     'help', 'HELP', 'stop', 'Stop', 'start', 'scam', 'SCAM', 'remind', 'translate', 'TRANSLATE',
+    'list', 'LIST', 'fehrist', 'cancel', 'CANCEL', 'mansookh', 'منسوخ',
   );
   const aliasPrefixedArb: fc.Arbitrary<string> = fc
     .tuple(whitespaceOnlyArb, aliasArb, fc.constantFrom('', ' ', ':', ': ', '\n'), anyText)

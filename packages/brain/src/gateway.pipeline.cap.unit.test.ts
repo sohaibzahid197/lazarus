@@ -17,6 +17,7 @@ import type {
   PipelineContext,
 } from './gateway.types.js';
 import { splitSms } from './sms.js';
+import { EMPTY_REMINDERS } from './reminder.types.js';
 
 const DAY = '2024-01-01';
 const T0 = Date.UTC(2024, 0, 1, 6, 0);
@@ -32,6 +33,7 @@ const LONG_ANSWER = 'Rain forms when water vapour cools into drops that fall. '.
 const SHORT_ANSWER = 'Rain is water falling from clouds.';
 
 const stateWith = (cap: number, handed: number, over: Partial<GatewayState> = {}): GatewayState => ({
+  reminders: EMPTY_REMINDERS,
   stopList: new Set(),
   allowlist: new Set(),
   rate: new Map(),

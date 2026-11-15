@@ -28,6 +28,7 @@ import {
   urduCharArb,
 } from './router.arbitraries.js';
 import type { Language } from './router.types.js';
+import { EMPTY_REMINDERS, type ReminderState } from './reminder.types.js';
 
 /** Shared run settings: every gateway property runs at least 100 iterations. */
 export const GATEWAY_PBT_OPTIONS = { numRuns: 100 } as const;
@@ -257,8 +258,12 @@ const sortedTimes: fc.Arbitrary<readonly number[]> = fc
 /**
  * A Gateway_State. Numbers are drawn from `pool` (when given) and random
  * Canonical_Numbers, so a test's sender can appear on any list.
+ * `reminders` defaults to `EMPTY_REMINDERS`; pass e.g. `reminderStore(pool)` to vary it.
  */
-export function gatewayState(pool: readonly CanonicalNumber[] = []): fc.Arbitrary<GatewayState> {
+export function gatewayState(
+  pool: readonly CanonicalNumber[] = [],
+  reminders: fc.Arbitrary<ReminderState> = fc.constant(EMPTY_REMINDERS),
+): fc.Arbitrary<GatewayState> {
   const numberArb =
     pool.length > 0 ? fc.oneof(fc.constantFrom(...pool), canonicalNumber) : canonicalNumber;
   const numbers = fc.array(numberArb, { maxLength: 8 });
@@ -273,6 +278,7 @@ export function gatewayState(pool: readonly CanonicalNumber[] = []): fc.Arbitrar
         rate: fc.array(fc.tuple(numberArb, sortedTimes), { maxLength: 6 }),
         slowDown: fc.array(fc.tuple(numberArb, timeArb), { maxLength: 4 }),
         counters: dayCounters(s.dailySendCap),
+        reminders,
       })
       .map(
         (r): GatewayState => ({
@@ -282,6 +288,7 @@ export function gatewayState(pool: readonly CanonicalNumber[] = []): fc.Arbitrar
           slowDown: new Map(r.slowDown),
           counters: r.counters,
           settings: s,
+          reminders: r.reminders,
         }),
       ),
   );

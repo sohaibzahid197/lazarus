@@ -99,6 +99,8 @@ describe('Property 8: START clears the Stop_List and replies only with Welcome_B
         const removes = decision.changes.filter((c) => c.type === 'stop-remove');
         expect(removes).toEqual(wasStopped ? [{ type: 'stop-remove', number: sc.number }] : []);
         expect(decision.changes.some((c) => c.type === 'stop-add')).toBe(false);
+        // START restores nothing: no reminder change of any kind (sms-reminders 8.1).
+        expect(decision.changes.some((c) => c.type.startsWith('reminder-'))).toBe(false);
 
         expect(['started', 'rate-limited', 'send-capped']).toContain(decision.outcome);
         const texts = GATEWAY_TEXTS[decision.language];

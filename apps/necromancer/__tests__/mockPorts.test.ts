@@ -1,9 +1,25 @@
 // Self-test for the recording GatewayPorts mock (Requirement 18.11).
-import type { ActivityEntry, CanonicalNumber } from '@lazarus/brain';
+import {
+  encodeReminder,
+  type ActivityEntry,
+  type CanonicalNumber,
+  type Reminder,
+  type ReminderId,
+} from '@lazarus/brain';
 import { allSent, createMockPorts, emptyState, inbound } from './support/mockPorts';
 
 const NUMBER = '+923001234567' as CanonicalNumber;
 const ENTRY: ActivityEntry = { receivedAt: 1, who: '••••567', command: 'STOP', outcome: 'stopped' };
+const REMINDER: Reminder = {
+  id: 'r1' as ReminderId,
+  number: NUMBER,
+  slot: 1,
+  dueAt: 5_000,
+  text: 'take medicine',
+  language: 'en',
+  createdAt: 1_000,
+  handedAt: null,
+};
 
 describe('mockPorts', () => {
   it('uses healthy defaults', async () => {
@@ -79,6 +95,50 @@ describe('mockPorts', () => {
 
     expect(await gateway.takeNextInbound()).toMatchObject({ id: 'm1', body: 'hello' });
     expect(await gateway.takeNextInbound()).toBeNull();
+  });
+
+  it('loads a readable Reminder_Store, empty by default or with the given wire entries', async () => {
+    const empty = emptyState('2026-01-15');
+    expect(empty.status === 'ok' && empty.state.reminders).toEqual({ status: 'ok', reminders: [] });
+    const one = emptyState('2026-01-15', [encodeReminder(REMINDER)]);
+    expect(one.status === 'ok' && one.state.reminders).toEqual({ status: 'ok', reminders: [REMINDER] });
+
+    const m = createMockPorts();
+    m.scripts.loadState.resolve(one);
+    expect(await m.ports.store.loadState('2026-01-15')).toEqual(one);
+  });
+
+  it('records reminders port calls and delivers onRemindersDue until unsubscribed', async () => {
+    const m = createMockPorts();
+    const { reminders } = m.ports;
+    expect(await reminders.getExactAlarmAccess()).toBe(true);
+    m.scripts.getExactAlarmAccess.resolve(false);
+    expect(await reminders.getExactAlarmAccess()).toBe(false);
+    await expect(reminders.reschedule()).resolves.toBeUndefined();
+    m.scripts.scheduleRetry.reject('alarm manager gone');
+    await expect(reminders.scheduleRetry()).rejects.toThrow('alarm manager gone');
+    await reminders.openExactAlarmSettings();
+
+    let due = 0;
+    const off = reminders.onRemindersDue(() => {
+      due++;
+    });
+    expect(m.remindersDueListenerCount()).toBe(1);
+    m.emitRemindersDue();
+    off();
+    m.emitRemindersDue();
+    expect(due).toBe(1);
+    expect(m.remindersDueListenerCount()).toBe(0);
+
+    expect(m.names()).toEqual([
+      'getExactAlarmAccess',
+      'getExactAlarmAccess',
+      'reschedule',
+      'scheduleRetry',
+      'openExactAlarmSettings',
+      'onRemindersDue',
+    ]);
+    expect(m.calls.every((c) => c.port === 'reminders')).toBe(true);
   });
 
   it('records an ordered call log with arguments', async () => {

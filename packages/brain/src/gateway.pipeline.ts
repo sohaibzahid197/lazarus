@@ -2,10 +2,12 @@
 // check order" and "Send finalization"). Pure functions apart from the injected
 // timer used by the async wrapper `runGatewayPipeline`.
 // No GatewayDecision, PendingReply or StateChange built here holds the body text
-// (Requirement 14.7).
+// (Requirement 14.7), except the Reminder_Text inside the `reminder-add` of a
+// REMIND (sms-reminders 5.12, 14.7).
 import type { AnswerDeps } from './answer.types.js';
 import { answerQuestion, checkScam } from './answer.service.js';
 import { FIXED_TEXTS } from './answer.texts.js';
+import { notAllowed, stopChanges } from './gateway.checks.js';
 import { countersFor, recordFinal, releaseParts, reserveParts } from './gateway.counters.js';
 import { normalizeSender } from './gateway.number.js';
 import { checkRate, pruneRate, slowDownDue } from './gateway.rate.js';
@@ -23,6 +25,9 @@ import type {
   SenderIdentity,
   StateChange,
 } from './gateway.types.js';
+import { cappedReminderChanges, reminderReply, type ReminderCommand } from './reminder.pipeline.js';
+import { applyReminderChange } from './reminder.store.js';
+import type { ReminderState } from './reminder.types.js';
 import { routeCommand } from './router.js';
 import type { Command, Language, RoutedCommand } from './router.types.js';
 import { splitSms } from './sms.js';
@@ -42,7 +47,7 @@ export interface PendingReply {
   readonly outcome: Extract<Outcome, 'replied' | 'started' | 'rate-limited'>;
   /** Local day key from the PipelineContext, used for the cap check. */
   readonly today: string;
-  /** Changes decided so far (stop-remove, rate-record, slowdown-record). */
+  /** Changes decided so far (stop-remove, rate-record, slowdown-record, reminder-add/-remove). */
   readonly changes: readonly StateChange[];
 }
 
@@ -76,6 +81,8 @@ interface Routed {
   readonly sender: Phone;
   readonly routed: RoutedCommand;
   readonly ctx: PipelineContext;
+  /** SMS_Splitter for the List_Formatter (sms-reminders 6.5). */
+  readonly split: (text: string) => string[];
 }
 
 // ---------------------------------------------------------------- decisions
@@ -127,12 +134,6 @@ function pendingFor(
 const isOwnNumber = (sender: Phone, state: GatewayState): boolean =>
   state.settings.ownNumber !== null && sender.number === state.settings.ownNumber;
 
-/** Allowlist_Mode blocks the number: mode on and not listed, or the list is unreadable (4.1, 4.8, 4.9, 4.11). */
-function notAllowed(number: CanonicalNumber, state: GatewayState): boolean {
-  if (!state.settings.allowlistMode) return false;
-  return state.allowlist === 'unreadable' || !state.allowlist.has(number);
-}
-
 const windowMs = (state: GatewayState): number => state.settings.rateWindowMinutes * MS_PER_MINUTE;
 
 const hasText = (s: string): boolean => /\S/.test(s);
@@ -149,11 +150,22 @@ function evaluatePaused(
   }
   const routed = route(msg.body);
   if (routed.command === 'STOP') {
-    return finalStep(msg, sender, 'STOP', routed.language, 'stopped', [
-      { type: 'stop-add', number: sender.number },
-    ]);
+    return finalStep(msg, sender, 'STOP', routed.language, 'stopped', stopChanges(sender.number));
   }
   return finalStep(msg, sender, routed.command, routed.language, 'ignored-paused');
+}
+
+/** REMIND, LIST, CANCEL: local reply plus at most one reminder change, no Answer_Service (sms-reminders 5.9). */
+function reminderStep(
+  r: Routed,
+  routed: ReminderCommand,
+  pending: PendingReply,
+  reminders: ReminderState,
+): EvalStep {
+  const { msg, sender, split } = r;
+  const reply = reminderReply(routed, sender.number, msg.id, msg.receivedAt, reminders, split);
+  const changes = [...pending.changes, ...reply.changes];
+  return { kind: 'reply', pending: { ...pending, changes }, text: reply.text };
 }
 
 /**
@@ -165,6 +177,7 @@ function replyFor(
   r: Routed,
   pending: PendingReply,
   aiAvailable: boolean,
+  reminders: ReminderState,
 ): EvalStep {
   const { command, argument, argumentMissing, language } = r.routed;
   const texts = GATEWAY_TEXTS[language];
@@ -180,9 +193,14 @@ function replyFor(
       return hasText(argument) ? ask('question') : reply(texts.help);
     case 'SCAM':
       return argumentMissing ? reply(texts.usage.SCAM) : ask('scam');
-    case 'REMIND':
     case 'TRANSLATE':
-      return reply(argumentMissing ? texts.usage[command] : texts.notAvailable);
+      return reply(argumentMissing ? texts.usage.TRANSLATE : texts.notAvailable);
+    case 'REMIND':
+    case 'LIST':
+    case 'CANCEL':
+      // Bare REMIND gets the usage hint inside `reminderReply`, after the
+      // unreadable-store check (sms-reminders 5.4, 12.7; design flowchart).
+      return reminderStep(r, { ...r.routed, command }, pending, reminders);
     case 'HELP':
     case 'STOP':
       return reply(texts.help);
@@ -210,9 +228,13 @@ function evaluateLimits(
   }
   const changes = [...base, { type: 'rate-record', number, at: t } as const];
   const handed = countersFor(state.counters, r.ctx.today).handed;
-  if (handed >= state.settings.dailySendCap) return routedFinal(r, 'send-capped', changes);
+  if (handed >= state.settings.dailySendCap) {
+    // A CANCEL at the cap still removes the reminder (sms-reminders 7.7).
+    const capped = cappedReminderChanges(r.routed, number, state.reminders);
+    return routedFinal(r, 'send-capped', [...changes, ...capped]);
+  }
   const outcome = r.routed.command === 'START' ? 'started' : 'replied';
-  return replyFor(r, pendingFor(r, outcome, changes), aiAvailable);
+  return replyFor(r, pendingFor(r, outcome, changes), aiAvailable, state.reminders);
 }
 
 /** START: Stop_List removal, then the Allowlist gate (Requirement 3.4, 3.5, 3.13, 4.8, 4.11). */
@@ -228,7 +250,7 @@ function evaluateStart(r: Routed, state: GatewayState, aiAvailable: boolean): Ev
 function evaluateRouted(r: Routed, state: GatewayState, aiAvailable: boolean): EvalStep {
   const { number } = r.sender;
   if (r.routed.command === 'STOP') {
-    return routedFinal(r, 'stopped', [{ type: 'stop-add', number }]);
+    return routedFinal(r, 'stopped', stopChanges(number));
   }
   if (r.routed.command === 'START') return evaluateStart(r, state, aiAvailable);
   if (state.stopList.has(number)) return routedFinal(r, 'ignored-stopped');
@@ -247,6 +269,7 @@ export function evaluateInbound(
   ctx: PipelineContext,
   route: (input: string) => RoutedCommand,
   aiAvailable: boolean,
+  split: (text: string) => string[] = splitSms,
 ): EvalStep {
   const sender = normalizeSender(msg.sender, state.settings.defaultCountryCode);
   if (ctx.paused) return evaluatePaused(msg, sender, state, route);
@@ -257,13 +280,18 @@ export function evaluateInbound(
     return finalStep(msg, sender, null, DEFAULT_LANGUAGE, 'ignored-own-number');
   }
   const routed = route(msg.body);
-  return evaluateRouted({ msg, sender, routed, ctx }, state, aiAvailable);
+  return evaluateRouted({ msg, sender, routed, ctx, split }, state, aiAvailable);
 }
+
+const keptWhenCapped = (c: StateChange): boolean =>
+  c.type !== 'slowdown-record' && c.type !== 'reminder-add';
 
 /**
  * Synchronous: splits the Reply_Text once and applies the Daily_Send_Cap
  * (Requirement 5.8, 6.8). A capped reply keeps the Stop_List and rate changes
- * but drops the slowdown-record, because no Slow_Down_Text is sent.
+ * but drops the slowdown-record, because no Slow_Down_Text is sent, and the
+ * reminder-add, because no Reminder_Set_Text is sent; a reminder-remove stays
+ * (sms-reminders 5.11, 7.7).
  */
 export function completeReply(
   pending: PendingReply,
@@ -281,7 +309,7 @@ export function completeReply(
     language: pending.language,
   };
   if (counters.handed + parts.length > state.settings.dailySendCap) {
-    const changes = pending.changes.filter((c) => c.type !== 'slowdown-record');
+    const changes = pending.changes.filter(keptWhenCapped);
     return { ...base, outcome: 'send-capped', parts: [], changes };
   }
   const reserved = reserveParts(counters, pending.today, parts.length);
@@ -336,6 +364,11 @@ function applyChange(state: GatewayState, change: StateChange): GatewayState {
         ...state,
         allowlist: withSet(state.allowlist, change.number, change.type === 'allow-add'),
       };
+    case 'reminder-add':
+    case 'reminder-remove':
+    case 'reminder-remove-all':
+    case 'reminder-handed':
+      return { ...state, reminders: applyReminderChange(state.reminders, change) };
   }
 }
 
@@ -379,11 +412,12 @@ function evaluateSafely(
   ctx: PipelineContext,
   route: (input: string) => RoutedCommand,
   aiAvailable: boolean,
+  split: (text: string) => string[],
 ): EvalStep {
   try {
-    return evaluateInbound(msg, state, ctx, route, aiAvailable);
+    return evaluateInbound(msg, state, ctx, route, aiAvailable, split);
   } catch {
-    return evaluateInbound(msg, state, ctx, () => ROUTER_FAILED, false);
+    return evaluateInbound(msg, state, ctx, () => ROUTER_FAILED, false, split);
   }
 }
 
@@ -478,7 +512,7 @@ async function runUnsafe(
 ): Promise<GatewayDecision> {
   const route = deps.route ?? routeCommand;
   const split = deps.split ?? splitSms;
-  const step = evaluateSafely(msg, state, ctx, route, deps.answer !== null);
+  const step = evaluateSafely(msg, state, ctx, route, deps.answer !== null, split);
   if (step.kind === 'final') return step.decision;
   if (step.kind === 'reply') return completeSafely(step.pending, step.text, state, split);
   const text =

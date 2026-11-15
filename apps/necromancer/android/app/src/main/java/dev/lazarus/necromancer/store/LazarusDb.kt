@@ -3,6 +3,7 @@ package dev.lazarus.necromancer.store
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 
 /**
  * The single native store `lazarus.db` (WAL). Every write runs in one transaction.
@@ -12,17 +13,48 @@ import android.database.sqlite.SQLiteOpenHelper
 class LazarusDb private constructor(context: Context) :
   SQLiteOpenHelper(context, StoreSchema.DB_NAME, null, StoreSchema.VERSION) {
 
+  /**
+   * True once the `reminder` table exists (schema version 2). False after a failed migration, so
+   * `loadState` reports `reminders: null` (Reminder_Store unreadable, Requirement 12.4) and
+   * [nextReminderDueAt] throws. Set during `onCreate` / `onUpgrade` / `onOpen`.
+   */
+  @Volatile var reminderTableReady: Boolean = false
+    private set
+
   init {
     setWriteAheadLoggingEnabled(true)
   }
 
+  // onCreate and onUpgrade run inside the helper's transaction; ReminderMigration uses a
+  // savepoint, so a failure undoes only its own DDL and the version 1 tables stay intact.
+
   override fun onCreate(db: SQLiteDatabase) {
     StoreSchema.CREATE_STATEMENTS.forEach(db::execSQL)
+    reminderTableReady = migrate(db)
   }
 
   override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-    // Version 1 is the only schema.
+    if (oldVersion < 2) reminderTableReady = migrate(db)
   }
+
+  /**
+   * Runs on every open. Retries the idempotent migration when the table is not ready: after a
+   * failed upgrade, or on a database already at version 2 opened by a new process.
+   */
+  override fun onOpen(db: SQLiteDatabase) {
+    super.onOpen(db)
+    if (reminderTableReady || db.isReadOnly) return
+    db.beginTransaction()
+    try {
+      reminderTableReady = migrate(db)
+      db.setTransactionSuccessful()
+    } finally {
+      db.endTransaction()
+    }
+  }
+
+  private fun migrate(db: SQLiteDatabase): Boolean =
+    ReminderMigration.migrate(AndroidSqlConn(db)) { Log.w(TAG, it) }
 
   // ---- reads ----
 
@@ -42,7 +74,49 @@ class LazarusDb private constructor(context: Context) :
       countersJson = readCounters(),
       settings = readKv(StoreSchema.KV_SETTINGS),
       paused = readPaused(),
+      reminders = readRemindersOrNull(),
     )
+  }
+
+  /** Active_Reminders, or `null` when the table is not ready or the read fails (12.6, 12.7). */
+  fun readRemindersOrNull(): List<ReminderRow>? {
+    val db = readableDatabase // opens (and runs onOpen) before the ready check
+    if (!reminderTableReady) return null
+    return try {
+      db.rawQuery(StoreSql.SELECT_REMINDERS, null).use { c ->
+        val out = ArrayList<ReminderRow>(c.count)
+        while (c.moveToNext()) {
+          out.add(
+            ReminderRow(
+              id = c.getString(0),
+              number = c.getString(1),
+              slot = c.getInt(2),
+              dueAt = c.getLong(3),
+              text = c.getString(4),
+              language = c.getString(5),
+              createdAt = c.getLong(6),
+              handedAt = if (c.isNull(7)) null else c.getLong(7),
+            ),
+          )
+        }
+        out
+      }
+    } catch (e: RuntimeException) {
+      Log.w(TAG, "LazarusDb: reminder read failed (${e.javaClass.simpleName})")
+      null
+    }
+  }
+
+  /**
+   * Earliest Due_Time of a reminder not yet handed to the Sms_Sender, or `null` when none.
+   * Throws when the Reminder_Store is not ready or cannot be read.
+   */
+  fun nextReminderDueAt(): Long? {
+    val db = readableDatabase
+    check(reminderTableReady) { "reminder table not ready" }
+    return db.rawQuery(StoreSql.SELECT_NEXT_REMINDER_DUE, null).use { c ->
+      if (c.moveToFirst() && !c.isNull(0)) c.getLong(0) else null
+    }
   }
 
   fun readPaused(): Boolean = readKv(StoreSchema.KV_PAUSED) == "1"
@@ -156,6 +230,8 @@ class LazarusDb private constructor(context: Context) :
     readableDatabase.rawQuery(StoreSql.SELECT_KV, arrayOf(key)).use { c -> if (c.moveToFirst()) c.getString(0) else null }
 
   companion object {
+    private const val TAG = "LazarusDb"
+
     @Volatile private var instance: LazarusDb? = null
 
     fun get(context: Context): LazarusDb =

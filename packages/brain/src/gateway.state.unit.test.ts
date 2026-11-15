@@ -1,13 +1,35 @@
-// Unit tests for the state wire format (necromancer-sms-gateway task 11.2).
-// Validates: Requirements 3.7, 4.9, 15.5
+// Unit tests for the state wire format (necromancer-sms-gateway task 11.2,
+// sms-reminders task 12.4).
+// Validates: Requirements 3.7, 4.9, 15.5 (gateway); 12.6, 12.7, 12.8 (sms-reminders)
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_SETTINGS, serializeSettings } from './gateway.settings.js';
 import { decodeStoredState, serializeChanges, type DecodedState } from './gateway.state.js';
 import type { CanonicalNumber, DayCounters, StateChange } from './gateway.types.js';
+import type { Reminder, ReminderId } from './reminder.types.js';
 
 const A = '+923001234567' as CanonicalNumber;
 const B = '+923331112223' as CanonicalNumber;
 const TODAY = '2024-01-02';
+const R1: Reminder = {
+  id: 'r:msg-1' as ReminderId,
+  number: A,
+  slot: 1,
+  dueAt: 1_704_200_000_000,
+  text: 'take medicine',
+  language: 'en',
+  createdAt: 1_704_190_000_000,
+  handedAt: null,
+};
+const R2: Reminder = {
+  id: 'r:msg-2' as ReminderId,
+  number: B,
+  slot: 2,
+  dueAt: 1_704_300_000_000,
+  text: 'دوا لیں',
+  language: 'ur',
+  createdAt: 1_704_195_000_000,
+  handedAt: 1_704_300_000_500,
+};
 
 const counters: DayCounters = {
   dayKey: '2024-01-01',
@@ -28,6 +50,7 @@ function payload(overrides: Record<string, unknown> = {}): string {
     counters,
     settings: serializeSettings(DEFAULT_SETTINGS),
     paused: false,
+    reminders: [],
     ...overrides,
   });
 }
@@ -111,6 +134,30 @@ describe('decodeStoredState', () => {
   });
 });
 
+describe('decodeStoredState reminders (sms-reminders 12.6, 12.7, 12.8)', () => {
+  it('decodes a valid payload with reminders to ok', () => {
+    const r = decodeOk(
+      payload({
+        reminders: [
+          { id: 'r:msg-1', number: A, slot: 1, dueAt: 1_704_200_000_000, text: 'take medicine', language: 'en', createdAt: 1_704_190_000_000, handedAt: null },
+          { id: 'r:msg-2', number: B, slot: 2, dueAt: 1_704_300_000_000, text: 'دوا لیں', language: 'ur', createdAt: 1_704_195_000_000, handedAt: 1_704_300_000_500 },
+        ],
+      }),
+    );
+    expect(r.state.reminders).toEqual({ status: 'ok', reminders: [R1, R2] });
+  });
+  it('decodes an empty reminders array to an empty ok store', () => {
+    expect(decodeOk(payload()).state.reminders).toEqual({ status: 'ok', reminders: [] });
+  });
+  it('decodes a missing reminders key to unreadable, never empty', () => {
+    const { reminders: _omit, ...rest } = JSON.parse(payload()) as Record<string, unknown>;
+    expect(_omit).toEqual([]);
+    expect(decodeOk(JSON.stringify(rest)).state.reminders).toEqual({ status: 'unreadable' });
+  });
+  it('decodes reminders: null to unreadable', () => {
+    expect(decodeOk(payload({ reminders: null })).state.reminders).toEqual({ status: 'unreadable' });
+  });
+});
 describe('serializeChanges', () => {
   it('round trips every StateChange variant through JSON.parse', () => {
     const changes: StateChange[] = [
@@ -125,6 +172,30 @@ describe('serializeChanges', () => {
     expect(JSON.parse(serializeChanges(changes))).toEqual(changes);
   });
 
+  it('round trips the reminder change types with exactly their declared keys', () => {
+    const changes: StateChange[] = [
+      { type: 'reminder-add', reminder: R1 },
+      { type: 'reminder-add', reminder: R2 },
+      { type: 'reminder-remove', id: 'r:msg-1' as ReminderId },
+      { type: 'reminder-remove-all', number: B },
+      { type: 'reminder-handed', id: 'r:msg-2' as ReminderId, at: 1_704_300_000_500 },
+    ];
+    const json = serializeChanges(changes);
+    expect(JSON.parse(json)).toEqual(changes);
+    expect(json).toBe(
+      '[' +
+        '{"type":"reminder-add","reminder":{"id":"r:msg-1","number":"+923001234567","slot":1,"dueAt":1704200000000,"text":"take medicine","language":"en","createdAt":1704190000000,"handedAt":null}},' +
+        '{"type":"reminder-add","reminder":{"id":"r:msg-2","number":"+923331112223","slot":2,"dueAt":1704300000000,"text":"دوا لیں","language":"ur","createdAt":1704195000000,"handedAt":1704300000500}},' +
+        '{"type":"reminder-remove","id":"r:msg-1"},' +
+        '{"type":"reminder-remove-all","number":"+923331112223"},' +
+        '{"type":"reminder-handed","id":"r:msg-2","at":1704300000500}' +
+        ']',
+    );
+  });
+  it('round trips a reminder-add Reminder back through decodeStoredState (12.8)', () => {
+    const added = (JSON.parse(serializeChanges([{ type: 'reminder-add', reminder: R2 }])) as [{ reminder: unknown }])[0];
+    expect(decodeOk(payload({ reminders: [added.reminder] })).state.reminders).toEqual({ status: 'ok', reminders: [R2] });
+  });
   it('serializes an empty change list as an empty array', () => {
     expect(serializeChanges([])).toBe('[]');
   });

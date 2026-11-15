@@ -16,9 +16,10 @@ import {
   type DecodedState,
   type GatewayDecision,
   type GatewayState,
+  type ReminderState,
   type SendReport,
 } from '@lazarus/brain';
-import type { GatewayPorts, LogFn } from '../native/ports';
+import type { GatewayPorts, LogFn, RemindersPort } from '../native/ports';
 import type { AiHolder } from './ai';
 import type { CommitQueue } from './commitQueue';
 import { allowlistOnly, type SettingsUpdate } from './settingsSync';
@@ -54,6 +55,11 @@ export interface LoopContext {
   readonly commits: CommitQueue;
   readonly ai: AiHolder;
   state: GatewayState;
+  /**
+   * Set by `onRemindersDue`, loop start, resume and the 60-second retry; the loop
+   * runs the due reminders before its next take (sms-reminders 11.6, 11.15).
+   */
+  remindersDue: boolean;
 }
 
 /** Resolves true when `stopped` fired first. */
@@ -88,7 +94,8 @@ export function refreshNotification(ctx: LoopContext): void {
   ctx.ports.gateway.updateNotification(heartbeatWord(ctx.ui.getSnapshot()), counters.replied);
 }
 
-function showCounters(ctx: LoopContext, counters: DayCounters): void {
+/** Today's counters and the cap banner (Requirement 4.9). */
+export function showCounters(ctx: LoopContext, counters: DayCounters): void {
   ctx.ui.setCounters(counters);
   ctx.ui.setBanner('cap-reached', counters.handed >= ctx.state.settings.dailySendCap);
 }
@@ -116,6 +123,42 @@ export function applySettingsUpdate(ctx: LoopContext, update: SettingsUpdate): v
   ctx.state = update.settings === undefined ? withList : { ...withList, settings: update.settings };
   showCounters(ctx, countersFor(ctx.state.counters, todayKey(ctx.clock)));
   refreshNotification(ctx);
+}
+
+/** Total Active_Reminders across all numbers; null when the Reminder_Store is unreadable. */
+export function reminderCountOf(reminders: ReminderState): number | null {
+  return reminders.status === 'ok' ? reminders.reminders.length : null;
+}
+
+/**
+ * Reminder count and the "reminders could not be loaded" banner from the in-memory
+ * Reminder_Store (sms-reminders 12.7, 13.6, 13.7). Count only, never a number or text.
+ */
+export function showReminderStatus(ctx: {
+  readonly state: Pick<GatewayState, 'reminders'>;
+  readonly ui: Pick<GatewayStore, 'setReminderCount' | 'setBanner'>;
+}): void {
+  const count = reminderCountOf(ctx.state.reminders);
+  ctx.ui.setReminderCount(count);
+  ctx.ui.setBanner('reminders-unreadable', count === null);
+}
+
+/**
+ * Shows the "reminders can arrive late" banner while Exact_Alarm_Access is missing
+ * (sms-reminders 11.9). A failed check counts as no access, as the port decoder does.
+ */
+export async function showExactAlarmStatus(
+  reminders: Pick<RemindersPort, 'getExactAlarmAccess'>,
+  ui: Pick<GatewayStore, 'setBanner'>,
+  log: LogFn,
+): Promise<void> {
+  let granted = false;
+  try {
+    granted = await reminders.getExactAlarmAccess();
+  } catch {
+    log('reminders: exact alarm access check failed');
+  }
+  ui.setBanner('reminders-may-be-late', !granted);
 }
 
 // ---------------------------------------------------------------- load
@@ -190,7 +233,8 @@ export function finalize(
   refreshNotification(ctx);
 }
 
-function failedReport(partCount: number): SendReport {
+/** A rejected `sendParts` counts as every part `failed-other`. */
+export function failedReport(partCount: number): SendReport {
   return { status: 'done', results: Array.from({ length: partCount }, () => 'failed-other'), attempts: 1 };
 }
 

@@ -13,6 +13,7 @@ import type { GatewayDecision, GatewayState, InboundMessage, PipelineContext } f
 import { routeCommand } from './router.js';
 import type { Language } from './router.types.js';
 import { splitSms } from './sms.js';
+import { EMPTY_REMINDERS } from './reminder.types.js';
 
 const DAY = '2024-01-01';
 const T0 = Date.UTC(2024, 0, 1, 6, 0);
@@ -20,6 +21,7 @@ const RUN: PipelineContext = { paused: false, today: DAY };
 const BACKSTOP_MS = 25_000;
 
 const state: GatewayState = {
+  reminders: EMPTY_REMINDERS,
   stopList: new Set(),
   allowlist: new Set(),
   rate: new Map(),

@@ -1,5 +1,7 @@
 import fc from 'fast-check';
 import { ALIAS_TABLE } from './aliases.js';
+import { COMMANDS } from './router.types.js';
+import type { Command } from './router.types.js';
 
 /**
  * Roman Urdu marker list from the brain-command-router design.
@@ -23,8 +25,27 @@ export const anyText: fc.Arbitrary<string> = fc.oneof(
   fc.string({ unit: fc.constantFrom(' ', '\t', '\n', '\u00A0') }),
 );
 
-/** Any key of the alias table (English, Roman Urdu, Urdu script). */
+/** Any of the 9 Commands, LIST and CANCEL included. */
+export const commandArb: fc.Arbitrary<Command> = fc.constantFrom(...COMMANDS);
+/** Any key of the alias table (English, Roman Urdu, Urdu script), LIST and CANCEL keywords included. */
 export const aliasArb: fc.Arbitrary<string> = fc.constantFrom(...ALIASES);
+/** Commands that route only in a strict form (sms-reminders Requirement 1.2 to 1.6). */
+export const STRICT_FORM_COMMANDS: ReadonlySet<Command> = new Set<Command>(['LIST', 'CANCEL']);
+/** Alias whose Command takes any trailing text as its argument (every Command except LIST and CANCEL). */
+export const freeAliasArb: fc.Arbitrary<string> = fc.constantFrom(
+  ...ALIASES.filter((a) => {
+    const command = ALIAS_TABLE.get(a);
+    return command !== undefined && !STRICT_FORM_COMMANDS.has(command);
+  }),
+);
+/** LIST keyword: `list`, `fehrist` or `فہرست`. */
+export const listAliasArb: fc.Arbitrary<string> = fc.constantFrom(
+  ...ALIASES.filter((a) => ALIAS_TABLE.get(a) === 'LIST'),
+);
+/** CANCEL keyword: `cancel`, `mansookh` or `منسوخ`. */
+export const cancelAliasArb: fc.Arbitrary<string> = fc.constantFrom(
+  ...ALIASES.filter((a) => ALIAS_TABLE.get(a) === 'CANCEL'),
+);
 
 /** Per-character random upper/lower casing of a string. */
 export function caseMutate(alias: string): fc.Arbitrary<string> {

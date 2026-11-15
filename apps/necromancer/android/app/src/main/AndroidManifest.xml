@@ -11,6 +11,12 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Requirement 11.8: exact reminder alarms. Granted on API 26-30 (the permission
+         does not exist there); on API 31+ the Operator may grant it, else the
+         scheduler falls back to an inexact alarm. USE_EXACT_ALARM is reserved for
+         alarm clock and calendar apps, so it is never declared. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" tools:node="remove" />
 
     <!-- Requirement 17.5: never declared, even if a library manifest asks for them. -->
     <uses-permission android:name="android.permission.READ_SMS" tools:node="remove" />
@@ -33,6 +39,10 @@
       </intent>
       <intent>
         <action android:name="android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS" />
+      </intent>
+      <intent>
+        <action android:name="android.settings.REQUEST_SCHEDULE_EXACT_ALARM" />
+        <data android:scheme="package" />
       </intent>
       <intent>
         <action android:name="android.settings.AIRPLANE_MODE_SETTINGS" />
@@ -119,5 +129,20 @@
       <receiver
         android:name=".gateway.RestartReceiver"
         android:exported="false" />
+      <!-- Reminder alarm target (Requirement 11.6); explicit immutable PendingIntent only. -->
+      <receiver
+        android:name=".reminder.ReminderAlarmReceiver"
+        android:exported="false" />
+      <!-- Re-arms the reminder alarm after clock, time zone or exact alarm access changes
+           (Requirement 11.6). All three actions are protected system broadcasts. -->
+      <receiver
+        android:name=".reminder.ReminderEventsReceiver"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="android.intent.action.TIME_SET" />
+            <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+        </intent-filter>
+      </receiver>
     </application>
 </manifest>

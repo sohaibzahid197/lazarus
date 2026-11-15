@@ -20,6 +20,7 @@ import type {
 import { routeCommand } from './router.js';
 import type { RoutedCommand } from './router.types.js';
 import { splitSms } from './sms.js';
+import { EMPTY_REMINDERS } from './reminder.types.js';
 
 const DAY = '2024-01-01';
 const T0 = Date.UTC(2024, 0, 1, 6, 0);
@@ -27,6 +28,7 @@ const NUM = '+923001234567' as CanonicalNumber;
 const RUN: PipelineContext = { paused: false, today: DAY };
 
 const baseState = (over: Partial<GatewayState> = {}): GatewayState => ({
+  reminders: EMPTY_REMINDERS,
   stopList: new Set(),
   allowlist: new Set(),
   rate: new Map(),
@@ -83,7 +85,10 @@ describe('gateway.pipeline smoke', () => {
       const d = run(msg('stop'), s, ctx);
       expect(d.outcome).toBe('stopped');
       expect(d.parts).toEqual([]);
-      expect(d.changes).toEqual([{ type: 'stop-add', number: NUM }]);
+      expect(d.changes).toEqual([
+            { type: 'stop-add', number: NUM },
+            { type: 'reminder-remove-all', number: NUM },
+          ]);
       expect([...applyChanges(s, d.changes).stopList]).toEqual([NUM]);
     }
   });

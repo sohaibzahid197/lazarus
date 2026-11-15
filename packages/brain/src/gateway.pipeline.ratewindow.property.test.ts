@@ -12,6 +12,7 @@ import {
 import { applyChanges, runGatewayPipeline, type PipelineDeps } from './gateway.pipeline.js';
 import type { CanonicalNumber, GatewayDecision, GatewayState, InboundMessage } from './gateway.types.js';
 import { routeCommand } from './router.js';
+import { EMPTY_REMINDERS } from './reminder.types.js';
 
 const MS_PER_MINUTE = 60_000;
 /** Large cap: 40 messages × at most 4 parts never reach it, so the cap never binds. */
@@ -64,6 +65,7 @@ const scenario: fc.Arbitrary<Scenario> = fc
 
 function initialState(sc: Scenario): GatewayState {
   return {
+    reminders: EMPTY_REMINDERS,
     stopList: new Set(),
     allowlist: new Set(),
     rate: new Map(),

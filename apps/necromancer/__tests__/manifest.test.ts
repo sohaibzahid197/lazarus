@@ -1,9 +1,13 @@
 /**
  * Static checks on the Android manifest and backup rules.
  * Requirements 16.22 (no backup of app data), 17.4 (required permissions),
- * 17.5 (forbidden permissions never declared).
+ * 17.5 (forbidden permissions never declared); sms-reminders 11.8 (SCHEDULE_EXACT_ALARM
+ * declared, USE_EXACT_ALARM never), 12.9 (reminder table covered by the `database` exclusion).
  */
-type Fs = { readFileSync: (path: string, encoding: 'utf8') => string };
+type Fs = {
+  readFileSync: (path: string, encoding: 'utf8') => string;
+  existsSync: (path: string) => boolean;
+};
 type Path = { join: (...parts: string[]) => string };
 /** Jest runs on Node; the app tsconfig has no Node types (`require` comes from RN's globals). */
 declare const __dirname: string;
@@ -53,6 +57,7 @@ describe('permissions', () => {
     'REQUEST_IGNORE_BATTERY_OPTIMIZATIONS',
     'WAKE_LOCK',
     'INTERNET',
+    'SCHEDULE_EXACT_ALARM',
   ];
   const forbidden = [
     'READ_SMS',
@@ -60,10 +65,15 @@ describe('permissions', () => {
     'READ_CONTACTS',
     'ACCESS_FINE_LOCATION',
     'ACCESS_COARSE_LOCATION',
+    'USE_EXACT_ALARM',
   ];
 
   test.each(required)('%s is declared', perm => {
     expect(declared).toContain(P + perm);
+  });
+
+  test('the declared permission set is exactly the required set', () => {
+    expect([...declared].sort()).toEqual(required.map(p => P + p).sort());
   });
 
   test.each(forbidden)('%s is only present as tools:node="remove"', perm => {
@@ -96,6 +106,57 @@ describe('receivers', () => {
     const receiver = byName(manifest, 'receiver', '.gateway.SendResultReceiver');
     expect(receiver).toBeDefined();
     expect(attr(receiver ?? '', 'android:exported')).toBe('false');
+  });
+});
+
+describe('reminder receivers', () => {
+  const JAVA = path.join(MAIN, 'java', 'dev', 'lazarus', 'necromancer', 'reminder');
+
+  /** The full <receiver>...</receiver> (or self-closing) element for a name. */
+  function receiverBlock(name: string): string | undefined {
+    const xml = stripComments(manifest);
+    const re = /<receiver\b[^>]*?(?:\/>|>[\s\S]*?<\/receiver>)/g;
+    return xml.match(re)?.find(b => attr(b, 'android:name') === name);
+  }
+
+  function actions(block: string): (string | undefined)[] {
+    return tags(block, 'action').map(t => attr(t, 'android:name'));
+  }
+
+  test.each(['ReminderAlarmReceiver', 'ReminderEventsReceiver'])(
+    '%s class file exists',
+    cls => {
+      expect(fs.existsSync(path.join(JAVA, `${cls}.kt`))).toBe(true);
+    },
+  );
+
+  test('ReminderAlarmReceiver is not exported and has no intent-filter', () => {
+    const block = receiverBlock('.reminder.ReminderAlarmReceiver');
+    expect(block).toBeDefined();
+    expect(attr(block ?? '', 'android:exported')).toBe('false');
+    expect(tags(block ?? '', 'intent-filter')).toHaveLength(0);
+  });
+
+  test('ReminderEventsReceiver is exported for the three system broadcasts only', () => {
+    const block = receiverBlock('.reminder.ReminderEventsReceiver');
+    expect(block).toBeDefined();
+    expect(attr(block ?? '', 'android:exported')).toBe('true');
+    expect([...actions(block ?? '')].sort()).toEqual(
+      [
+        'android.intent.action.TIME_SET',
+        'android.intent.action.TIMEZONE_CHANGED',
+        'android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED',
+      ].sort(),
+    );
+  });
+
+  test('BootReceiver still handles BOOT_COMPLETED and MY_PACKAGE_REPLACED', () => {
+    const block = receiverBlock('.gateway.BootReceiver');
+    expect(block).toBeDefined();
+    expect(attr(block ?? '', 'android:exported')).toBe('true');
+    expect([...actions(block ?? '')].sort()).toEqual(
+      ['android.intent.action.BOOT_COMPLETED', 'android.intent.action.MY_PACKAGE_REPLACED'].sort(),
+    );
   });
 });
 

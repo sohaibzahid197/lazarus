@@ -27,6 +27,14 @@ class SettingsTargetsTest {
   }
 
   @Test
+  fun exactAlarmUsesPackageUriAndFallsBackToAppInfo() {
+    val chain = SettingsTargets.exactAlarm
+    assertEquals("android.settings.REQUEST_SCHEDULE_EXACT_ALARM", chain[0].action)
+    assertTrue(chain[0].withPackageUri)
+    val order = SettingsTargets.candidates(chain) { it != chain[0] }
+    assertEquals(SettingsTargets.APP_INFO, chain[order.first()])
+  }
+  @Test
   fun nothingResolvesGivesNoCandidates() {
     assertEquals(emptyList<Int>(), SettingsTargets.candidates(SettingsTargets.mobileNetwork) { false })
   }

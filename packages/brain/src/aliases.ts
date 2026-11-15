@@ -8,18 +8,24 @@ export const ALIAS_TABLE: ReadonlyMap<string, Command> = new Map<string, Command
   ['scam', 'SCAM'],
   ['remind', 'REMIND'],
   ['translate', 'TRANSLATE'],
+  ['list', 'LIST'],
+  ['cancel', 'CANCEL'],
   ['madad', 'HELP'],
   ['band', 'STOP'],
   ['shuru', 'START'],
   ['dhoka', 'SCAM'],
   ['yaad', 'REMIND'],
   ['tarjuma', 'TRANSLATE'],
+  ['fehrist', 'LIST'],
+  ['mansookh', 'CANCEL'],
   ['مدد', 'HELP'],
   ['بند', 'STOP'],
   ['شروع', 'START'],
   ['دھوکہ', 'SCAM'],
   ['یاد', 'REMIND'],
   ['ترجمہ', 'TRANSLATE'],
+  ['فہرست', 'LIST'],
+  ['منسوخ', 'CANCEL'],
 ]);
 
 export const ROMAN_URDU_ALIASES: ReadonlySet<string> = new Set([
@@ -29,6 +35,8 @@ export const ROMAN_URDU_ALIASES: ReadonlySet<string> = new Set([
   'dhoka',
   'yaad',
   'tarjuma',
+  'fehrist',
+  'mansookh',
 ]);
 
 /** Canonical English keyword used by the printer. */
@@ -39,4 +47,6 @@ export const ENGLISH_KEYWORD: Readonly<Record<Exclude<Command, 'QUESTION'>, stri
   SCAM: 'SCAM',
   REMIND: 'REMIND',
   TRANSLATE: 'TRANSLATE',
+  LIST: 'LIST',
+  CANCEL: 'CANCEL',
 };

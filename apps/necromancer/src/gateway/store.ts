@@ -22,6 +22,9 @@ export const BANNERS = [
   'cap-reached', // 5.9: Daily_Send_Cap reached
   'ai-key-missing', // 16.19: no or unreadable Gemini_Api_Key
   'phone-status-unreadable', // 13.15: no Device_Status within 5 s
+  'reminders-unreadable', // sms-reminders 12.7, 13.7: Reminder_Store read failed
+  'reminders-save-failed', // sms-reminders 10.14: reminder removal not saved after retries
+  'reminders-may-be-late', // sms-reminders 11.9: no Exact_Alarm_Access on API 31+
 ] as const;
 export type Banner = (typeof BANNERS)[number];
 
@@ -39,6 +42,12 @@ export interface GatewaySnapshot {
   readonly activity: readonly ActivityEntry[];
   /** Increases by 1 per received Inbound_Message; drives the extra pulse (13.6). */
   readonly inboundPulse: number;
+  /**
+   * Total Active_Reminders across all numbers (sms-reminders 13.6); null until
+   * loaded or while the Reminder_Store is unreadable (13.7). Only a count: no
+   * number or Reminder_Text enters this store (13.2, 13.3).
+   */
+  readonly reminderCount: number | null;
 }
 
 export interface GatewayStore {
@@ -59,6 +68,8 @@ export interface GatewayStore {
   clearActivity(): void;
   /** Mirrors `onInboundAvailable` for the Heartbeat's extra pulse (13.6). */
   pulseInbound(): void;
+  /** Whole number from 0 upward, or null when the Reminder_Store is unreadable (13.6, 13.7). */
+  setReminderCount(count: number | null): void;
 }
 
 const INITIAL: GatewaySnapshot = {
@@ -69,6 +80,7 @@ const INITIAL: GatewaySnapshot = {
   banners: [],
   activity: [],
   inboundPulse: 0,
+  reminderCount: null,
 };
 
 const DEVICE_KEYS: readonly (keyof DeviceStatus)[] = [
@@ -168,6 +180,10 @@ export function createGatewayStore(): GatewayStore {
     },
     pulseInbound() {
       patch({ inboundPulse: snapshot.inboundPulse + 1 });
+    },
+    setReminderCount(count) {
+      const next = count === null || !Number.isSafeInteger(count) || count < 0 ? null : count;
+      if (next !== snapshot.reminderCount) patch({ reminderCount: next });
     },
   };
 }

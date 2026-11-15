@@ -3,7 +3,8 @@ import { describe, it } from 'vitest';
 import { routeCommand } from './router.js';
 import { aliasArb, anyText, caseMutate, punctArb, wsArb } from './router.arbitraries.js';
 
-const ARG_REQUIRED: ReadonlySet<string> = new Set(['SCAM', 'REMIND', 'TRANSLATE']);
+// CANCEL also needs an argument: bare CANCEL sets argumentMissing (sms-reminders Requirement 1.6).
+const ARG_REQUIRED: ReadonlySet<string> = new Set(['SCAM', 'REMIND', 'TRANSLATE', 'CANCEL']);
 
 /** Alias-prefixed message with optional whitespace + tail (tail may be whitespace-only or empty). */
 const aliasMessage: fc.Arbitrary<string> = fc
@@ -28,7 +29,7 @@ describe('Property 7: argumentMissing reflects empty required arguments', () => 
   /**
    * **Validates: Requirements 5.4, 5.5, 5.6**
    */
-  it('argumentMissing is true iff command is SCAM/REMIND/TRANSLATE and argument is empty', () => {
+  it('argumentMissing is true iff command is SCAM/REMIND/TRANSLATE/CANCEL and argument is empty', () => {
     fc.assert(
       fc.property(fc.oneof(anyText, aliasMessage), (input) => {
         const r = routeCommand(input);

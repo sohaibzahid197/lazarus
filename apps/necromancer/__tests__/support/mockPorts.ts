@@ -19,6 +19,7 @@ import type {
   GatewayPorts,
   KeyStatus,
   KeyStorePort,
+  RemindersPort,
   StorePort,
   Unsubscribe,
 } from '../../src/native/ports';
@@ -71,7 +72,7 @@ export class Script<T, A extends readonly unknown[]> {
   }
 }
 
-type AllMethods = GatewayPort & StorePort & DevicePort & KeyStorePort;
+type AllMethods = GatewayPort & StorePort & DevicePort & KeyStorePort & RemindersPort;
 
 /** Names of the methods that return a Promise. */
 export type AsyncMethod = {
@@ -107,9 +108,15 @@ export interface CallRecord {
 export const MOCK_TODAY = '2026-01-15';
 export const MOCK_KEY = 'AIzaMockKey000000000000000000000000000';
 
-/** An empty, readable state (no stops, default settings, not paused). */
-export function emptyState(today: string = MOCK_TODAY): DecodedState {
-  return decodeStoredState(JSON.stringify({ stopList: [] }), today);
+/**
+ * An empty, readable state (no stops, default settings, not paused, readable empty
+ * Reminder_Store). `reminders` takes wire-format entries as `loadState()` returns them.
+ */
+export function emptyState(
+  today: string = MOCK_TODAY,
+  reminders: readonly unknown[] = [],
+): DecodedState {
+  return decodeStoredState(JSON.stringify({ stopList: [], reminders }), today);
 }
 
 export const HEALTHY_DEVICE: DeviceStatus = {
@@ -158,6 +165,10 @@ export interface MockPorts {
   emitSendState(sending: boolean): void;
   emitServiceStatus(status: ServiceStatus): void;
   emitDeviceStatus(status: DeviceStatus | null): void;
+  /** Fires `onRemindersDue`, like the Reminder_Alarm_Receiver (sms-reminders). */
+  emitRemindersDue(): void;
+  /** Number of live `onRemindersDue` listeners (0 after every unsubscribe). */
+  remindersDueListenerCount(): number;
   /** Lets queued promise callbacks run (works with fake timers). */
   settle(rounds?: number): Promise<void>;
 }
@@ -252,6 +263,11 @@ function createScripts(s: MockState): Scripts {
     readKey: script('readKey', (): KeyStatus => ({ status: 'present', key: MOCK_KEY })),
     saveKey: script('saveKey', done),
     deleteKey: script('deleteKey', done),
+    // reminders
+    reschedule: script('reschedule', done),
+    scheduleRetry: script('scheduleRetry', done),
+    getExactAlarmAccess: script('getExactAlarmAccess', () => true),
+    openExactAlarmSettings: script('openExactAlarmSettings', done),
   };
 }
 
@@ -268,6 +284,7 @@ export function createMockPorts(): MockPorts {
   const sendStateL = new Listeners<boolean>();
   const serviceL = new Listeners<ServiceStatus>();
   const deviceL = new Listeners<DeviceStatus | null>();
+  const remindersDueL = new Listeners<void>();
 
   const record = (port: PortName, method: MethodName, args: readonly unknown[]): void => {
     calls.push({ port, method, args });
@@ -360,8 +377,19 @@ export function createMockPorts(): MockPorts {
     deleteKey: () => call('keyStore', 'deleteKey', []),
   };
 
+  const reminders: RemindersPort = {
+    reschedule: () => call('reminders', 'reschedule', []),
+    scheduleRetry: () => call('reminders', 'scheduleRetry', []),
+    getExactAlarmAccess: () => call('reminders', 'getExactAlarmAccess', []),
+    openExactAlarmSettings: () => call('reminders', 'openExactAlarmSettings', []),
+    onRemindersDue: (listener) => {
+      record('reminders', 'onRemindersDue', []);
+      return remindersDueL.add(() => listener());
+    },
+  };
+
   return {
-    ports: { gateway, store, device, keyStore },
+    ports: { gateway, store, device, keyStore, reminders },
     scripts,
     calls,
     inbox: state.inbox,
@@ -381,6 +409,8 @@ export function createMockPorts(): MockPorts {
     emitSendState: (sending) => sendStateL.emit(sending),
     emitServiceStatus: (status) => serviceL.emit(status),
     emitDeviceStatus: (status) => deviceL.emit(status),
+    emitRemindersDue: () => remindersDueL.emit(),
+    remindersDueListenerCount: () => remindersDueL.size,
     settle: async (rounds = 50) => {
       for (let i = 0; i < rounds; i++) await Promise.resolve();
     },

@@ -8,13 +8,18 @@
  * - Banners: cap reached (5.9), AI key missing with a button to the AI key
  *   Setup_Step (16.19), Stop_List unreadable (3.11) or not saved (3.12),
  *   Allowlist unreadable (4.9), settings reset (15.5, dismissible), phone
- *   status unreadable after 5 s (13.15).
+ *   status unreadable after 5 s (13.15), reminders not saved (sms-reminders
+ *   10.14), reminders can arrive late with an "Allow exact alarms" button,
+ *   re-checked on every return to the foreground (sms-reminders 11.9).
+ * - Reminder count row: the total of Active_Reminders, or the "could not be
+ *   loaded" message in its place (sms-reminders 12.7, 13.6, 13.7).
  * - Activity_Log newest first with local time, masked `who`, Command and
  *   Outcome (14.4, 14.5); clear with a confirmation dialog (14.9 to 14.11).
  * - Start / pause / resume by service status (9.1, 9.5, 9.8), and buttons
  *   to Setup (12.10) and Settings.
  *
- * Privacy: the only per-sender text shown is the already masked `who`.
+ * Privacy: the only per-sender text shown is the already masked `who`. The
+ * reminder row shows a count only: no number and no Reminder_Text (13.2).
  */
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Alert, AppState, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -27,7 +32,8 @@ import {
   type ServiceStatus,
   type SleepReason,
 } from '@lazarus/brain';
-import type { GatewayPorts } from '../../native/ports';
+import type { GatewayPorts, LogFn } from '../../native/ports';
+import { showExactAlarmStatus } from '../../gateway/loopSupport';
 import {
   DEVICE_STATUS_TIMEOUT_MS,
   gatewayStore,
@@ -80,6 +86,9 @@ export const BANNER_TEXT: Readonly<Record<Banner, string>> = {
   'cap-reached': 'The daily send cap is reached. Sending resumes at 00:00 local time tomorrow.',
   'ai-key-missing': 'The AI key is missing, so questions get a busy reply.',
   'phone-status-unreadable': 'The phone status could not be read.',
+  'reminders-unreadable': 'Reminders could not be loaded.',
+  'reminders-save-failed': 'Reminders could not be saved.',
+  'reminders-may-be-late': 'Reminders can arrive late. Allow exact alarms to send them on time.',
 };
 
 const ERROR_BANNERS: readonly Banner[] = [
@@ -87,7 +96,18 @@ const ERROR_BANNERS: readonly Banner[] = [
   'stop-list-save-failed',
   'allowlist-unreadable',
   'phone-status-unreadable',
+  'reminders-unreadable',
+  'reminders-save-failed',
 ];
+/**
+ * Shown in the reminder count row instead of the banner list, so the message
+ * stands in place of the count and is not repeated (sms-reminders 13.7).
+ */
+const ROW_BANNERS: readonly Banner[] = ['reminders-unreadable'];
+export const REMINDER_ROW_TEXT = {
+  label: 'Reminders waiting',
+  loading: 'Loading reminders…',
+} as const;
 
 export const COUNTER_LABELS = {
   received: 'Messages received',
@@ -133,6 +153,8 @@ export type MainScreenProps = {
 };
 
 const ignore = (): undefined => undefined;
+/** The exact alarm check logs only a fixed line; the screen has no log sink. */
+const dropLog: LogFn = () => undefined;
 
 // ---------------------------------------------------------------- effects
 
@@ -193,6 +215,19 @@ function useServiceStatus(ports: GatewayPorts, store: GatewayStore): void {
   }, [ports, store]);
 }
 
+/** Checks Exact_Alarm_Access on mount and each time the app is active again (sms-reminders 11.9). */
+function useExactAlarmStatus(ports: GatewayPorts, store: GatewayStore): void {
+  useEffect(() => {
+    const check = (): void => {
+      showExactAlarmStatus(ports.reminders, store, dropLog).catch(ignore);
+    };
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') check();
+    });
+    check();
+    return () => sub.remove();
+  }, [ports, store]);
+}
 function useActivityLoad(ports: GatewayPorts, store: GatewayStore): void {
   useEffect(() => {
     let live = true;
@@ -238,16 +273,49 @@ function Banners(props: {
   banners: readonly Banner[];
   onOpenAiKey: () => void;
   onDismissReset: () => void;
+  onAllowExactAlarms: () => void;
 }): React.JSX.Element {
   return (
     <>
-      {props.banners.map((b) => (
-        <BannerCard key={b} banner={b}>
-          {b === 'ai-key-missing' ? <ActionButton label="Add AI key" onPress={props.onOpenAiKey} /> : null}
-          {b === 'settings-reset' ? <ActionButton label="Dismiss" onPress={props.onDismissReset} /> : null}
-        </BannerCard>
-      ))}
+      {props.banners
+        .filter((b) => !ROW_BANNERS.includes(b))
+        .map((b) => (
+          <BannerCard key={b} banner={b}>
+            {b === 'ai-key-missing' ? <ActionButton label="Add AI key" onPress={props.onOpenAiKey} /> : null}
+            {b === 'settings-reset' ? <ActionButton label="Dismiss" onPress={props.onDismissReset} /> : null}
+            {b === 'reminders-may-be-late' ? (
+              <ActionButton label="Allow exact alarms" onPress={props.onAllowExactAlarms} />
+            ) : null}
+          </BannerCard>
+        ))}
     </>
+  );
+}
+/** Count only, never a number or Reminder_Text (sms-reminders 13.2, 13.6, 13.7). */
+function ReminderRow({ count, unreadable }: { count: number | null; unreadable: boolean }): React.JSX.Element {
+  if (unreadable) {
+    return (
+      <View accessibilityRole="alert" style={styles.card}>
+        <Text style={[styles.label, styles.error]}>{BANNER_TEXT['reminders-unreadable']}</Text>
+      </View>
+    );
+  }
+  if (count === null) {
+    return (
+      <View style={styles.card}>
+        <Text style={styles.muted}>{REMINDER_ROW_TEXT.loading}</Text>
+      </View>
+    );
+  }
+  return (
+    <View
+      accessible
+      accessibilityLabel={`${REMINDER_ROW_TEXT.label}: ${count}`}
+      style={styles.card}
+    >
+      <Text style={styles.counterValue}>{count}</Text>
+      <Text style={styles.muted}>{REMINDER_ROW_TEXT.label}</Text>
+    </View>
   );
 }
 
@@ -360,6 +428,7 @@ export function MainScreen({
   useDeviceStatus(ports, store);
   useServiceStatus(ports, store);
   useActivityLoad(ports, store);
+  useExactAlarmStatus(ports, store);
   const snap = useGatewayStore((s) => s, store);
   const heartbeat: HeartbeatValue = deriveHeartbeat(snap.deviceStatus ?? ASSUMED_DEVICE, snap.serviceStatus, snap.sending);
   const reason = heartbeat.state === 'SLEEPING' ? heartbeat.reason : null;
@@ -377,8 +446,10 @@ export function MainScreen({
         banners={snap.banners}
         onOpenAiKey={() => onOpenSetup('ai-key')}
         onDismissReset={() => store.setBanner('settings-reset', false)}
+        onAllowExactAlarms={() => ports.reminders.openExactAlarmSettings().catch(ignore)}
       />
       <Counters counters={snap.counters} />
+      <ReminderRow count={snap.reminderCount} unreadable={snap.banners.includes('reminders-unreadable')} />
       <ServiceControl status={snap.serviceStatus} ports={ports} />
       <ActivityLog entries={snap.activity} formatTime={formatTime} onClear={() => confirmClear(ports, store)} />
       <View style={styles.nav}>
